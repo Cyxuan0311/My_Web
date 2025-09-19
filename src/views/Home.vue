@@ -148,7 +148,8 @@
     CodeBracketIcon as SkillsIcon,
     BriefcaseIcon,
     DocumentTextIcon,
-    EnvelopeIcon
+    EnvelopeIcon,
+    ComputerDesktopIcon
   } from '@heroicons/vue/24/outline'
 
 export default {
@@ -162,7 +163,8 @@ export default {
     SkillsIcon,
     BriefcaseIcon,
     DocumentTextIcon,
-    EnvelopeIcon
+    EnvelopeIcon,
+    ComputerDesktopIcon
   },
   setup() {
     // 时钟相关

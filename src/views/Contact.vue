@@ -32,7 +32,7 @@
             <div class="method-info">
               <h3>位置</h3>
               <p>中国武汉</p>
-              <span class="contact-text">欢迎线下交流</span>
+              <span class="contact-text">欢迎交流</span>
             </div>
           </div>
         </div>

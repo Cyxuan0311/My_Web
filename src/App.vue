@@ -33,7 +33,7 @@
                   </div>
             <h2 class="profile-name">Frames</h2>
             <p class="profile-title">C/C++ & AI基础设施 & HPC 爱好者</p>
-            <p class="profile-desc">来自中国武汉，专注于高性能计算和AI基础设施</p>
+            <p class="profile-desc">专注于高性能计算和AI基础设施</p>
           </div>
           
           <!-- 导航菜单 -->
