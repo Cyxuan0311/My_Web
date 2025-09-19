@@ -1,0 +1,24 @@
+{
+  "name": "my-personal-website",
+  "version": "1.0.0",
+  "description": "A modern personal website built with Vue 3 and Element Plus",
+  "author": "Frames",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.1.0",
+    "@heroicons/vue": "^2.2.0",
+    "element-plus": "^2.4.4",
+    "lucide-vue-next": "^0.544.0",
+    "vue": "^3.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.5.2",
+    "vite": "^5.0.10"
+  }
+}
