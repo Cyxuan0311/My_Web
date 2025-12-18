@@ -1,69 +1,58 @@
 <template>
   <div class="contact-page">
-    <div class="page-header">
-      <h1>联系我</h1>
-      <p>让我们开始交流吧</p>
-    </div>
-    
     <div class="contact-content">
       <div class="contact-info-section">
-        <h2>联系方式</h2>
+        <h2>{{ contactText.infoTitle }}</h2>
         <div class="contact-methods">
-          <div class="contact-method">
-            <EnvelopeIcon class="method-icon" />
+          <div
+            class="contact-method"
+            v-for="method in contactMethods"
+            :key="method.key"
+          >
+            <component :is="method.icon" class="method-icon" />
             <div class="method-info">
-              <h3>邮箱</h3>
-              <p>cyxvvv@gmail.com</p>
-              <a href="mailto:cyxvvv@gmail.com" class="contact-link">发送邮件</a>
-            </div>
-          </div>
-          
-          <div class="contact-method">
-            <CodeBracketIcon class="method-icon" />
-            <div class="method-info">
-              <h3>GitHub</h3>
-              <p>Cyxuan0311</p>
-              <a href="https://github.com/Cyxuan0311" target="_blank" class="contact-link">访问主页</a>
-            </div>
-          </div>
-          
-          <div class="contact-method">
-            <MapPinIcon class="method-icon" />
-            <div class="method-info">
-              <h3>位置</h3>
-              <p>中国武汉</p>
-              <span class="contact-text">欢迎交流</span>
+              <h3>{{ method.label }}</h3>
+              <p>{{ method.value }}</p>
+              <a
+                v-if="method.actionText && method.href"
+                :href="method.href"
+                target="_blank"
+                class="contact-link"
+              >
+                {{ method.actionText }}
+              </a>
+              <span v-else-if="method.extra" class="contact-text">{{ method.extra }}</span>
             </div>
           </div>
         </div>
       </div>
       
       <div class="contact-form-section">
-        <h2>发送消息</h2>
+        <h2>{{ contactText.formTitle }}</h2>
         <form class="contact-form" @submit.prevent="submitForm">
           <div class="form-group">
-            <label for="name">姓名</label>
+            <label for="name">{{ contactText.form.name }}</label>
             <input type="text" id="name" v-model="form.name" required>
           </div>
           
           <div class="form-group">
-            <label for="email">邮箱</label>
+            <label for="email">{{ contactText.form.email }}</label>
             <input type="email" id="email" v-model="form.email" required>
           </div>
           
           <div class="form-group">
-            <label for="subject">主题</label>
+            <label for="subject">{{ contactText.form.subject }}</label>
             <input type="text" id="subject" v-model="form.subject" required>
           </div>
           
           <div class="form-group">
-            <label for="message">消息</label>
+            <label for="message">{{ contactText.form.message }}</label>
             <textarea id="message" v-model="form.message" rows="5" required></textarea>
           </div>
           
           <button type="submit" class="submit-btn" :disabled="isSubmitting">
             <PaperAirplaneIcon class="btn-icon" />
-            {{ isSubmitting ? '发送中...' : '发送消息' }}
+            {{ isSubmitting ? contactText.sending : contactText.sendMessage }}
           </button>
         </form>
       </div>
@@ -72,13 +61,14 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { 
   EnvelopeIcon, 
   CodeBracketIcon, 
   MapPinIcon,
   PaperAirplaneIcon
 } from '@heroicons/vue/24/outline'
+import { useI18n } from '../composables/useI18n'
 
 export default {
   name: 'Contact',
@@ -96,6 +86,9 @@ export default {
       subject: '',
       message: ''
     })
+    const { messages } = useI18n()
+    const contactText = computed(() => messages.value.contact)
+    const contactMethods = computed(() => contactText.value.methods)
     
     const submitForm = async () => {
       isSubmitting.value = true
@@ -112,13 +105,15 @@ export default {
       }
       
       isSubmitting.value = false
-      alert('消息发送成功！我会尽快回复您。')
+      alert(contactText.value.alertSuccess)
     }
     
     return {
       form,
       isSubmitting,
-      submitForm
+      submitForm,
+      contactText,
+      contactMethods
     }
   }
 }

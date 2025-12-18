@@ -1,32 +1,42 @@
 <template>
   <div class="blog-page">
-    <div class="page-header">
-      <h1>技术博客</h1>
-      <p>分享我的技术见解和学习心得</p>
-    </div>
-    
     <div class="blog-content">
       <div class="blog-posts">
-        <article class="blog-post" v-for="post in blogPosts" :key="post.id">
-          <div class="post-meta">
-            <span class="post-date">
-              <CalendarIcon class="meta-icon" />
-              {{ post.date }}
-            </span>
-            <span class="post-category">
-              <TagIcon class="meta-icon" />
-              {{ post.category }}
-            </span>
-          </div>
-          <h2 class="post-title">{{ post.title }}</h2>
-          <p class="post-excerpt">{{ post.excerpt }}</p>
-          <div class="post-stats">
-            <span><EyeIcon class="stat-icon" /> {{ post.views }}</span>
-            <span><ChatBubbleLeftIcon class="stat-icon" /> {{ post.comments }}</span>
-            <span><HeartIcon class="stat-icon" /> {{ post.likes }}</span>
-          </div>
-          <div class="post-actions">
-            <button class="read-btn">阅读全文</button>
+        <article class="blog-post" v-for="post in blogPosts" :key="post.id" @click="readMore(post.id)">
+          <div class="post-content-wrapper">
+            <div class="post-main">
+              <div class="post-header">
+                <h2 class="post-title">{{ post.title }}</h2>
+                <div class="post-meta">
+                  <span class="post-date">
+                    <CalendarIcon class="meta-icon" />
+                    {{ post.date }}
+                  </span>
+                  <span class="post-category">
+                    <TagIcon class="meta-icon" />
+                    {{ post.category }}
+                  </span>
+                </div>
+              </div>
+              <p class="post-excerpt">{{ post.excerpt }}</p>
+              <div class="post-footer">
+                <div class="post-stats">
+                  <span class="stat-item">
+                    <EyeIcon class="stat-icon" />
+                    {{ post.views }}
+                  </span>
+                  <span class="stat-item">
+                    <ChatBubbleLeftIcon class="stat-icon" />
+                    {{ post.comments }}
+                  </span>
+                  <span class="stat-item">
+                    <HeartIcon class="stat-icon" />
+                    {{ post.likes }}
+                  </span>
+                </div>
+                <button class="read-btn" @click.stop="readMore(post.id)">{{ blogText.readMore }}</button>
+              </div>
+            </div>
           </div>
         </article>
       </div>
@@ -35,6 +45,7 @@
 </template>
 
 <script>
+import { computed } from 'vue'
 import { 
   EyeIcon, 
   ChatBubbleLeftIcon, 
@@ -42,6 +53,7 @@ import {
   CalendarIcon,
   TagIcon
 } from '@heroicons/vue/24/outline'
+import { useI18n } from '../composables/useI18n'
 
 export default {
   name: 'Blog',
@@ -53,71 +65,21 @@ export default {
     TagIcon
   },
   setup() {
-    const blogPosts = [
-      {
-        id: 1,
-        title: 'C++17包管理器的设计与实现',
-        excerpt: '基于Paker项目的经验分享，深入探讨C++包管理器的设计理念、架构实现和CMake集成的最佳实践。',
-        date: '2025-09-17',
-        category: 'C/C++',
-        views: 1250,
-        comments: 23,
-        likes: 89
-      },
-      {
-        id: 2,
-        title: 'CUDA操作库的性能优化实践',
-        excerpt: '从cuOP项目出发，分享CUDA编程中的内存管理、JIT编译和GPU计算优化的实战经验和技巧。',
-        date: '2025-09-15',
-        category: 'HPC/GPU',
-        views: 980,
-        comments: 15,
-        likes: 67
-      },
-      {
-        id: 3,
-        title: '现代C++终端应用开发指南',
-        excerpt: '基于FTB文件浏览器的开发经验，介绍使用FTXUI库开发现代化终端应用的设计思路和实现方法。',
-        date: '2025-09-12',
-        category: 'C/C++',
-        views: 756,
-        comments: 12,
-        likes: 45
-      },
-      {
-        id: 4,
-        title: 'Qt5代码编辑器的架构设计',
-        excerpt: '从Nexus项目出发，分享基于Qt5开发代码编辑器的架构设计、XML解析和代码结构可视化的实现方案。',
-        date: '2025-09-10',
-        category: 'C/C++',
-        views: 892,
-        comments: 18,
-        likes: 72
-      },
-      {
-        id: 5,
-        title: 'Java爬虫系统的设计与实现',
-        excerpt: '基于SPIDERS项目的实战经验，分享使用Jsoup进行网页爬取、Swing构建UI和MySQL数据存储的完整解决方案。',
-        date: '2025-05-25',
-        category: 'Java',
-        views: 634,
-        comments: 8,
-        likes: 38
-      },
-      {
-        id: 6,
-        title: 'C++日志系统的高性能实现',
-        excerpt: '从Easy_Log项目出发，深入分析C++日志系统的设计原理、性能优化和线程安全等关键技术点。',
-        date: '2025-02-26',
-        category: 'C/C++',
-        views: 1123,
-        comments: 25,
-        likes: 91
-      }
-    ]
+    const { messages } = useI18n()
+    const blogText = computed(() => messages.value.blog)
+    const blogPosts = computed(() => blogText.value.posts)
+    
+    const readMore = (postId) => {
+      // 触发导航到博客详情页的事件
+      window.dispatchEvent(new CustomEvent('navigate-to-blog-detail', {
+        detail: { postId }
+      }))
+    }
 
     return {
-      blogPosts
+      blogPosts,
+      blogText,
+      readMore
     }
   }
 }
@@ -126,7 +88,7 @@ export default {
 <style scoped>
 .blog-page {
   padding: 2rem;
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -150,96 +112,196 @@ export default {
 .blog-content {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 0;
 }
 
 .blog-posts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .blog-post {
   background: white;
-  border-radius: 15px;
-  padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0;
   transition: all 0.3s ease;
   cursor: pointer;
+  position: relative;
+  margin-bottom: 0;
+}
+
+.blog-post:first-child {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.blog-post:last-child {
+  border-bottom: none;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.blog-post::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(135deg, #3182ce, #20c997);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .blog-post:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  background: #f9fafb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.blog-post:hover::before {
+  opacity: 1;
+}
+
+.post-content-wrapper {
+  padding: 1.75rem 2rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.post-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.post-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.post-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+  line-height: 1.5;
+  transition: color 0.3s ease;
+}
+
+.blog-post:hover .post-title {
+  color: #3182ce;
 }
 
 .post-meta {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  color: #6c757d;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.post-date {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
 }
 
 .post-category {
-  background: linear-gradient(45deg, #20c997, #17a2b8);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: linear-gradient(135deg, #3182ce, #20c997);
   color: white;
-  padding: 0.2rem 0.8rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 12px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 500;
 }
 
-.post-title {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 1rem;
-  line-height: 1.4;
+.meta-icon {
+  width: 14px;
+  height: 14px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.post-category .meta-icon {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .post-excerpt {
-  color: #6c757d;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
+  color: #4b5563;
+  line-height: 1.7;
+  margin: 0;
+  font-size: 0.95rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f3f4f6;
 }
 
 .post-stats {
   display: flex;
+  align-items: center;
   gap: 1.5rem;
-  font-size: 0.9rem;
-  color: #6c757d;
-  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
 }
 
-.meta-icon,
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  transition: color 0.3s ease;
+}
+
+.blog-post:hover .stat-item {
+  color: #4b5563;
+}
+
 .stat-icon {
   width: 16px;
   height: 16px;
-  margin-right: 0.5rem;
-  color: #718096;
-  vertical-align: middle;
+  color: #9ca3af;
+  flex-shrink: 0;
+  transition: color 0.3s ease;
 }
 
-.post-actions {
-  text-align: right;
+.blog-post:hover .stat-icon {
+  color: #3182ce;
 }
 
 .read-btn {
-  background: linear-gradient(45deg, #20c997, #17a2b8);
+  background: linear-gradient(135deg, #3182ce, #20c997);
   color: white;
   border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 25px;
-  font-size: 0.9rem;
-  font-weight: 600;
+  padding: 0.5rem 1.25rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(49, 130, 206, 0.2);
 }
 
 .read-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(32, 201, 151, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
 }
 
 @media (max-width: 768px) {
@@ -247,12 +309,33 @@ export default {
     padding: 1rem;
   }
   
-  .blog-posts {
-    grid-template-columns: 1fr;
+  .post-content-wrapper {
+    padding: 1.25rem 1rem;
   }
   
-  .blog-post {
-    padding: 1.5rem;
+  .post-title {
+    font-size: 1.2rem;
+  }
+  
+  .post-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .read-btn {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .post-meta {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  
+  .post-stats {
+    flex-wrap: wrap;
+    gap: 1rem;
   }
 }
 </style>
