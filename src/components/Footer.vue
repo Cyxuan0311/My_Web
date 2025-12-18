@@ -3,43 +3,51 @@
     <div class="container">
       <div class="footer-content">
         <div class="footer-links">
-          <div class="link-group">
-            <h4>快速导航</h4>
-            <a href="#home">首页</a>
-            <a href="#about">关于我</a>
-            <a href="#portfolio">作品展示</a>
-            <a href="#contact">联系我</a>
-          </div>
-          
-          <div class="link-group">
-            <h4>技能专长</h4>
-            <a href="#">C/C++ 开发</a>
-            <a href="#">AI 基础设施</a>
-            <a href="#">高性能计算</a>
-            <a href="#">容器化技术</a>
+          <div
+            class="link-group"
+            v-for="group in footerText.linkGroups"
+            :key="group.title"
+          >
+            <h4>{{ group.title }}</h4>
+            <a
+              v-for="link in group.links"
+              :key="link.label + link.href"
+              :href="link.href"
+            >
+              {{ link.label }}
+            </a>
           </div>
         </div>
       </div>
       
       <div class="footer-bottom">
-        <p>&copy; 2024 我的个人网站. 保留所有权利.</p>
-        <p>用 ❤️ 和 Vue.js 构建</p>
+        <p v-for="(line, index) in footerText.bottom" :key="index">{{ line }}</p>
       </div>
     </div>
   </footer>
 </template>
 
 <script>
+import { computed } from 'vue'
+import { useI18n } from '../composables/useI18n'
+
 export default {
-  name: 'Footer'
+  name: 'Footer',
+  setup() {
+    const { messages } = useI18n()
+    const footerText = computed(() => messages.value.footer)
+    return { footerText }
+  }
 }
 </script>
 
 <style scoped>
 .footer {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 50%, #1a202c 100%);
+  color: #e2e8f0;
   margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .footer-content {
@@ -53,32 +61,44 @@ export default {
 .footer-links {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
+  gap: 3rem;
+  align-items: start;
+}
+
+.link-group {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .link-group h4 {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 1rem;
+  margin-top: 0;
+  color: #f7fafc;
 }
 
 .link-group a {
   display: block;
-  color: rgba(255, 255, 255, 0.8);
+  color: #cbd5e0;
   text-decoration: none;
   margin-bottom: 0.5rem;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
+  padding: 0.25rem 0;
 }
 
 .link-group a:hover {
-  color: white;
+  color: #3182ce;
+  transform: translateX(4px);
 }
 
 .footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding: 2rem 0;
   text-align: center;
-  color: rgba(255, 255, 255, 0.6);
+  color: #a0aec0;
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .footer-bottom p {
