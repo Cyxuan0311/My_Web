@@ -1,28 +1,15 @@
 <template>
   <div class="skills-page" :class="{ 'content-loading': contentLoading }">
-    <div class="page-header">
-      <h1>技能专长</h1>
-      <p>我的技术栈和专业能力</p>
-    </div>
-    
     <!-- 技术栈图标展示 -->
     <div class="tech-icons-showcase">
-      <h2>技术栈概览</h2>
+      <h2>{{ skillsText.techShowcaseTitle }}</h2>
       <div class="tech-icons-grid">
-        <div class="tech-icon-row">
-          <img src="https://skillicons.dev/icons?i=c,cpp,python,go" alt="编程语言" />
-        </div>
-        <div class="tech-icon-row">
-          <img src="https://skillicons.dev/icons?i=pytorch,tensorflow,docker,kubernetes" alt="AI & 机器学习" />
-        </div>
-        <div class="tech-icon-row">
-          <img src="https://skillicons.dev/icons?i=git,mysql,postgres,cmake" alt="开发工具" />
-        </div>
-        <div class="tech-icon-row">
-          <img src="https://skillicons.dev/icons?i=linux,ubuntu" alt="操作系统" />
-        </div>
-        <div class="tech-icon-row">
-          <img src="https://skillicons.dev/icons?i=vscode,sublime,vim" alt="编辑器" />
+        <div
+          class="tech-icon-row"
+          v-for="(row, index) in techIconRows"
+          :key="index"
+        >
+          <img :src="row.src" :alt="row.alt" />
         </div>
       </div>
     </div>
@@ -39,7 +26,48 @@
               <span class="skill-name">{{ skill.name }}</span>
               <span class="skill-level">{{ skill.level }}%</span>
             </div>
-            <div class="skill-bar">
+            <!-- 根据技能类别使用不同的可视化方式 -->
+            <div v-if="category.key === 'programming'" class="skill-bar">
+              <div class="skill-progress" :style="{ width: skill.level + '%' }"></div>
+            </div>
+            <div v-else-if="category.key === 'ai'" class="skill-line">
+              <svg class="line-chart" viewBox="0 0 100 20">
+                <polyline :points="getLinePoints(skill.level)" stroke="#38a169" stroke-width="2" fill="none"/>
+                <circle :cx="getLineX(skill.level)" cy="getLineY(skill.level)" r="2" fill="#38a169"/>
+              </svg>
+            </div>
+            <div v-else-if="category.key === 'containers'" class="skill-donut">
+              <div class="donut-progress" :style="{ '--progress': skill.level + '%' }">
+                <div class="donut-inner">
+                  <span class="donut-text">{{ skill.level }}%</span>
+                </div>
+              </div>
+            </div>
+            <div v-else-if="category.key === 'database'" class="skill-blocks">
+              <div class="block-container">
+                <div v-for="i in 10" :key="i" 
+                     class="skill-block" 
+                     :class="{ 'active': i <= Math.ceil(skill.level / 10) }">
+                </div>
+              </div>
+            </div>
+            <div v-else-if="category.key === 'tools'" class="skill-dots">
+              <div class="dot-container">
+                <div v-for="i in 10" :key="i" 
+                     class="skill-dot" 
+                     :class="{ 'active': i <= Math.ceil(skill.level / 10) }">
+                </div>
+              </div>
+            </div>
+            <div v-else-if="category.key === 'os'" class="skill-steps">
+              <div class="step-container">
+                <div v-for="i in 5" :key="i" 
+                     class="skill-step" 
+                     :class="{ 'active': i <= Math.ceil(skill.level / 20) }">
+                </div>
+              </div>
+            </div>
+            <div v-else class="skill-bar">
               <div class="skill-progress" :style="{ width: skill.level + '%' }"></div>
             </div>
           </div>
@@ -50,7 +78,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { 
   CodeBracketIcon, 
   CpuChipIcon, 
@@ -59,6 +87,7 @@ import {
   WrenchScrewdriverIcon, 
   ComputerDesktopIcon
 } from '@heroicons/vue/24/outline'
+import { useI18n } from '../composables/useI18n'
 
 export default {
   name: 'Skills',
@@ -72,84 +101,45 @@ export default {
   },
   setup() {
     const contentLoading = ref(true)
+    const { messages } = useI18n()
+    const skillsText = computed(() => messages.value.skills)
+    const skillCategories = computed(() => skillsText.value.categories)
+    const techIconRows = computed(() => skillsText.value.techIconRows)
     
     onMounted(() => {
       setTimeout(() => {
         contentLoading.value = false
       }, 700)
     })
-    const skillCategories = [
-      {
-        name: '编程语言',
-        icon: 'CodeBracketIcon',
-        color: '#3182ce',
-        skills: [
-          { name: 'C/C++', level: 95 },
-          { name: 'Python', level: 90 },
-          { name: 'Go', level: 80 },
-          { name: 'Shell Script', level: 75 }
-        ]
-      },
-      {
-        name: 'AI & 机器学习',
-        icon: 'CpuChipIcon',
-        color: '#38a169',
-        skills: [
-          { name: 'PyTorch', level: 90 },
-          { name: 'TensorFlow', level: 85 },
-          { name: 'CUDA', level: 80 },
-          { name: 'OpenMP', level: 75 }
-        ]
-      },
-      {
-        name: '容器化 & 编排',
-        icon: 'CubeIcon',
-        color: '#d69e2e',
-        skills: [
-          { name: 'Docker', level: 90 },
-          { name: 'Kubernetes', level: 85 },
-          { name: 'Podman', level: 70 },
-          { name: 'Helm', level: 75 }
-        ]
-      },
-      {
-        name: '数据库 & 存储',
-        icon: 'CircleStackIcon',
-        color: '#e53e3e',
-        skills: [
-          { name: 'MySQL', level: 85 },
-          { name: 'PostgreSQL', level: 80 },
-          { name: 'Redis', level: 75 },
-          { name: 'MongoDB', level: 70 }
-        ]
-      },
-      {
-        name: '开发工具',
-        icon: 'WrenchScrewdriverIcon',
-        color: '#805ad5',
-        skills: [
-          { name: 'Git', level: 95 },
-          { name: 'CMake', level: 90 },
-          { name: 'Make', level: 85 },
-          { name: 'GDB', level: 80 }
-        ]
-      },
-      {
-        name: '操作系统',
-        icon: 'ComputerDesktopIcon',
-        color: '#dd6b20',
-        skills: [
-          { name: 'Linux', level: 95 },
-          { name: 'Ubuntu', level: 90 },
-          { name: 'CentOS', level: 85 },
-          { name: 'Arch Linux', level: 80 }
-        ]
+
+    // 计算折线图路径的方法
+    const getLinePoints = (level) => {
+      const points = []
+      for (let i = 0; i <= 10; i++) {
+        const x = (i / 10) * 100
+        const progress = (i / 10) * level
+        const y = 15 - (progress / 100) * 10
+        points.push(`${x},${y}`)
       }
-    ]
+      return points.join(' ')
+    }
+    
+    const getLineX = (level) => {
+      return (level / 100) * 100
+    }
+    
+    const getLineY = (level) => {
+      return 15 - (level / 100) * 10
+    }
 
     return {
+      skillsText,
+      techIconRows,
       skillCategories,
-      contentLoading
+      contentLoading,
+      getLinePoints,
+      getLineX,
+      getLineY
     }
   }
 }
@@ -354,6 +344,169 @@ export default {
   bottom: 0;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   animation: shimmer 2s infinite;
+}
+
+/* 折线图样式 */
+.skill-line {
+  height: 8px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.line-chart {
+  width: 100%;
+  height: 20px;
+}
+
+/* 方块图样式 */
+.skill-blocks {
+  height: 8px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.block-container {
+  display: flex;
+  gap: 2px;
+  width: 100%;
+}
+
+.skill-block {
+  flex: 1;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.skill-block.active {
+  background: linear-gradient(45deg, #d69e2e, #b7791f);
+  box-shadow: 0 0 8px rgba(214, 158, 46, 0.3);
+}
+
+/* 圆盘图（甜甜圈图）样式 */
+.skill-donut {
+  height: 8px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-progress {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: conic-gradient(#d69e2e var(--progress, 0%), #e9ecef 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: donut-rotate 2s ease-in-out;
+}
+
+.donut-progress::before {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 50%;
+}
+
+.donut-inner {
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.donut-text {
+  font-size: 7px;
+  font-weight: 600;
+  color: #d69e2e;
+}
+
+@keyframes donut-rotate {
+  0% {
+    transform: rotate(-90deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* 点状图样式 */
+.skill-dots {
+  height: 8px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.dot-container {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.skill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.skill-dot.active {
+  background: linear-gradient(45deg, #805ad5, #6b46c1);
+  box-shadow: 0 0 6px rgba(128, 90, 213, 0.4);
+  transform: scale(1.2);
+}
+
+/* 阶梯图样式 */
+.skill-steps {
+  height: 8px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.step-container {
+  display: flex;
+  gap: 1px;
+  width: 100%;
+}
+
+.skill-step {
+  flex: 1;
+  height: 8px;
+  background: #e9ecef;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.skill-step.active {
+  background: linear-gradient(45deg, #dd6b20, #c05621);
+  box-shadow: 0 0 8px rgba(221, 107, 32, 0.3);
+}
+
+.skill-step.active::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(45deg, #dd6b20, #c05621);
+  border-radius: 1px;
 }
 
 @keyframes shimmer {

@@ -30,15 +30,15 @@
         <!-- 欢迎区域 -->
         <section class="welcome-section">
           <div class="welcome-content">
-            <h1 class="welcome-title">你好，我是 Frames</h1>
-            <p class="welcome-subtitle">C/C++ & AI基础设施 & HPC 爱好者</p>
-            <p class="welcome-desc">来自中国武汉，专注于高性能计算和AI基础设施的研究与开发</p>
+            <h1 class="welcome-title">{{ homeText.hero.title }}</h1>
+            <p class="welcome-subtitle">{{ homeText.hero.subtitle }}</p>
+            <p class="welcome-desc">{{ homeText.hero.description }}</p>
             <div class="welcome-actions">
               <button class="action-btn primary" @click="navigateToSection('about')">
-                了解更多
+                {{ homeText.hero.actions.primary }}
               </button>
               <button class="action-btn secondary" @click="navigateToSection('contact')">
-                联系我
+                {{ homeText.hero.actions.secondary }}
               </button>
             </div>
           </div>
@@ -46,7 +46,7 @@
 
         <!-- 核心技能展示 -->
         <section class="skills-preview">
-          <h2 class="section-title">核心技能</h2>
+          <h2 class="section-title">{{ homeText.sections.coreSkills }}</h2>
           <div class="skills-grid">
             <div class="skill-item" v-for="skill in coreSkills" :key="skill.name">
               <component :is="skill.icon" class="skill-icon" />
@@ -58,7 +58,7 @@
 
         <!-- 最新项目预览 -->
         <section class="projects-preview">
-          <h2 class="section-title">最新项目</h2>
+          <h2 class="section-title">{{ homeText.sections.latestProjects }}</h2>
           <div class="projects-grid">
               <div class="project-card" v-for="project in featuredProjects.slice(0, 3)" :key="project.id">
                 <div class="project-image" :style="{ background: project.gradient }">
@@ -79,39 +79,24 @@
           </div>
           <div class="view-more">
             <button class="view-more-btn" @click="navigateToPortfolio">
-              查看所有项目 →
+              {{ homeText.viewAll }}
             </button>
           </div>
         </section>
 
         <!-- 快速导航 -->
         <section class="quick-nav">
-          <h2 class="section-title">快速导航</h2>
+          <h2 class="section-title">{{ homeText.sections.quickNav }}</h2>
           <div class="nav-grid">
-            <div class="nav-item" @click="navigateToSection('about')">
-              <UserIcon class="nav-icon" />
-              <h3>关于我</h3>
-              <p>了解我的背景和经历</p>
-            </div>
-            <div class="nav-item" @click="navigateToSection('skills')">
-              <SkillsIcon class="nav-icon" />
-              <h3>技能专长</h3>
-              <p>查看我的技术栈</p>
-            </div>
-            <div class="nav-item" @click="navigateToSection('portfolio')">
-              <BriefcaseIcon class="nav-icon" />
-              <h3>作品展示</h3>
-              <p>浏览我的项目作品</p>
-            </div>
-            <div class="nav-item" @click="navigateToSection('blog')">
-              <DocumentTextIcon class="nav-icon" />
-              <h3>技术博客</h3>
-              <p>阅读我的技术文章</p>
-            </div>
-            <div class="nav-item" @click="navigateToSection('contact')">
-              <EnvelopeIcon class="nav-icon" />
-              <h3>联系我</h3>
-              <p>与我取得联系</p>
+            <div
+              class="nav-item"
+              v-for="item in quickNavItems"
+              :key="item.target"
+              @click="navigateToSection(item.target)"
+            >
+              <component :is="item.icon" class="nav-icon" />
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.description }}</p>
             </div>
           </div>
         </section>
@@ -121,7 +106,7 @@
     <div v-if="isLoading" class="loading-overlay">
       <div class="loading-spinner">
         <div class="spinner"></div>
-        <p>加载中...</p>
+        <p>{{ homeText.loadingText }}</p>
       </div>
     </div>
     
@@ -130,7 +115,7 @@
       class="scroll-to-top" 
       :class="{ visible: showScrollToTop }"
       @click="scrollToTop"
-      title="回到顶部"
+      :title="homeText.scrollTopTitle"
     >
       ↑
     </button>
@@ -138,19 +123,19 @@
 </template>
 
 <script>
-  import { ref, onMounted, onUnmounted } from 'vue'
+  import { ref, onMounted, onUnmounted, computed } from 'vue'
   import { 
     CodeBracketIcon, 
     CpuChipIcon, 
     BoltIcon, 
     CubeIcon,
     UserIcon,
-    CodeBracketIcon as SkillsIcon,
     BriefcaseIcon,
     DocumentTextIcon,
     EnvelopeIcon,
     ComputerDesktopIcon
   } from '@heroicons/vue/24/outline'
+  import { useI18n } from '../composables/useI18n'
 
 export default {
   name: 'Home',
@@ -160,7 +145,6 @@ export default {
     BoltIcon,
     CubeIcon,
     UserIcon,
-    SkillsIcon,
     BriefcaseIcon,
     DocumentTextIcon,
     EnvelopeIcon,
@@ -170,14 +154,15 @@ export default {
     // 时钟相关
     const currentTime = ref('')
     const currentDate = ref('')
-    const timezone = ref('CST (UTC+8)')
+    const weatherIndex = ref(0)
+    const { locale, messages } = useI18n()
+    const homeText = computed(() => messages.value.home)
+    const timezone = computed(() => homeText.value.timezone)
     
     // 天气相关
-    const weather = ref({
-      temperature: 22,
-      description: '多云',
-      location: '武汉'
-    })
+    const weatherOptions = computed(() => homeText.value.weatherOptions)
+    const weather = computed(() => weatherOptions.value[weatherIndex.value] || { temperature: 0, description: '', location: '' })
+    const timeLocale = computed(() => (locale.value === 'zh' ? 'zh-CN' : 'en-US'))
     
     
     
@@ -188,125 +173,10 @@ export default {
     const isLoading = ref(false)
     const contentLoading = ref(true)
     
-    // 核心技能数据
-    const coreSkills = ref([
-      {
-        name: 'C/C++',
-        icon: 'CodeBracketIcon',
-        description: '高性能编程语言，专注系统级开发'
-      },
-      {
-        name: 'AI基础设施',
-        icon: 'CpuChipIcon',
-        description: '机器学习平台和分布式训练系统'
-      },
-      {
-        name: 'HPC',
-        icon: 'BoltIcon',
-        description: '高性能计算和并行处理技术'
-      },
-      {
-        name: '容器化',
-        icon: 'CubeIcon',
-        description: 'Docker和Kubernetes容器编排'
-      }
-    ])
-    
-    const featuredProjects = ref([
-      {
-        id: 1,
-        title: 'Paker - C++包管理器',
-        description: '为C++项目设计的包控制器，提供简单易用的包管理方式，支持CMake集成',
-        icon: 'CodeBracketIcon',
-        gradient: 'linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%)',
-        technologies: ['C++17', 'CMake', 'Package Management', 'CLI']
-      },
-      {
-        id: 2,
-        title: 'cuOP - CUDA操作库',
-        description: '支持CUDA的操作符库，提供智能内存控制和JIT编译功能，专为高性能GPU计算设计',
-        icon: 'CpuChipIcon',
-        gradient: 'linear-gradient(135deg, #38a169 0%, #2f855a 100%)',
-        technologies: ['CUDA', 'C++', 'HPC', 'JIT', 'GPU Computing']
-      },
-      {
-        id: 3,
-        title: 'FTB - 文件浏览器',
-        description: '基于FTXUI和Linux的C++文件浏览器，提供现代化的终端文件管理体验',
-        icon: 'ComputerDesktopIcon',
-        gradient: 'linear-gradient(135deg, #d69e2e 0%, #b7791f 100%)',
-        technologies: ['C++', 'FTXUI', 'Linux', 'CMake', 'Terminal UI']
-      }
-    ])
-    
-    const skillCategories = ref([
-      {
-        name: '编程语言',
-        iconText: '💻',
-        color: '#409eff',
-        skills: [
-          { name: 'C/C++', level: 95 },
-          { name: 'Python', level: 90 },
-          { name: 'Go', level: 80 },
-          { name: 'Shell Script', level: 75 }
-        ]
-      },
-      {
-        name: 'AI & 机器学习',
-        iconText: '🤖',
-        color: '#67c23a',
-        skills: [
-          { name: 'PyTorch', level: 90 },
-          { name: 'TensorFlow', level: 85 },
-          { name: 'CUDA', level: 80 },
-          { name: 'OpenMP', level: 75 }
-        ]
-      },
-      {
-        name: '容器化 & 编排',
-        iconText: '🐳',
-        color: '#e6a23c',
-        skills: [
-          { name: 'Docker', level: 90 },
-          { name: 'Kubernetes', level: 85 },
-          { name: 'Podman', level: 70 },
-          { name: 'Helm', level: 75 }
-        ]
-      },
-      {
-        name: '数据库 & 存储',
-        iconText: '🗄️',
-        color: '#f56c6c',
-        skills: [
-          { name: 'MySQL', level: 85 },
-          { name: 'PostgreSQL', level: 80 },
-          { name: 'Redis', level: 75 },
-          { name: 'MongoDB', level: 70 }
-        ]
-      },
-      {
-        name: '开发工具',
-        iconText: '🛠️',
-        color: '#9c27b0',
-        skills: [
-          { name: 'Git', level: 95 },
-          { name: 'CMake', level: 90 },
-          { name: 'Make', level: 85 },
-          { name: 'GDB', level: 80 }
-        ]
-      },
-      {
-        name: '操作系统',
-        iconText: '🐧',
-        color: '#ff9800',
-        skills: [
-          { name: 'Linux', level: 95 },
-          { name: 'Ubuntu', level: 90 },
-          { name: 'CentOS', level: 85 },
-          { name: 'Arch Linux', level: 80 }
-        ]
-      }
-    ])
+    // 核心技能与内容
+    const coreSkills = computed(() => homeText.value.coreSkills)
+    const featuredProjects = computed(() => homeText.value.featuredProjects)
+    const quickNavItems = computed(() => homeText.value.quickNav)
     
     // 时钟更新函数
     const updateClock = () => {
@@ -319,7 +189,7 @@ export default {
         second: '2-digit',
         hour12: false
       }
-      currentTime.value = now.toLocaleTimeString('zh-CN', timeOptions)
+      currentTime.value = now.toLocaleTimeString(timeLocale.value, timeOptions)
       
       // 格式化日期
       const dateOptions = {
@@ -328,20 +198,15 @@ export default {
         day: 'numeric',
         weekday: 'long'
       }
-      currentDate.value = now.toLocaleDateString('zh-CN', dateOptions)
+      currentDate.value = now.toLocaleDateString(timeLocale.value, dateOptions)
     }
     
     // 天气更新函数
     const updateWeather = () => {
       // 模拟天气数据更新
-      const weathers = [
-        { temperature: 22, description: '多云', location: '武汉' },
-        { temperature: 25, description: '晴天', location: '武汉' },
-        { temperature: 18, description: '小雨', location: '武汉' },
-        { temperature: 28, description: '晴天', location: '武汉' }
-      ]
-      const randomWeather = weathers[Math.floor(Math.random() * weathers.length)]
-      weather.value = randomWeather
+      const options = weatherOptions.value
+      if (!options.length) return
+      weatherIndex.value = Math.floor(Math.random() * options.length)
     }
     
     
@@ -408,6 +273,8 @@ export default {
       // 数据
       coreSkills,
       featuredProjects,
+      quickNavItems,
+      homeText,
       
       // 时钟
       currentTime,
@@ -791,6 +658,10 @@ export default {
     text-align: center;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
   .skill-item:hover {
@@ -801,8 +672,9 @@ export default {
   .skill-icon {
     width: 48px;
     height: 48px;
-    margin-bottom: 1rem;
+    margin: 0 auto 1rem;
     color: #3182ce;
+    flex-shrink: 0;
   }
 
       .skill-item h3 {
@@ -813,6 +685,8 @@ export default {
         color: #1a202c;
         letter-spacing: -0.01em;
         line-height: 1.3;
+        text-align: center;
+        width: 100%;
       }
 
       .skill-item p {
@@ -822,6 +696,8 @@ export default {
         color: #4a5568;
         line-height: 1.6;
         letter-spacing: 0.01em;
+        text-align: center;
+        width: 100%;
       }
 
   /* 项目预览 */
@@ -959,6 +835,12 @@ export default {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 180px;
+    overflow: hidden;
   }
 
   .nav-item:hover {
@@ -971,6 +853,7 @@ export default {
     height: 40px;
     margin-bottom: 1rem;
     color: #3182ce;
+    flex-shrink: 0;
   }
 
       .nav-item h3 {
@@ -981,6 +864,11 @@ export default {
         color: #1a202c;
         letter-spacing: -0.01em;
         line-height: 1.3;
+        width: 100%;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto;
       }
 
       .nav-item p {
@@ -990,6 +878,12 @@ export default {
         color: #4a5568;
         line-height: 1.6;
         letter-spacing: 0.01em;
+        width: 100%;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto;
+        margin: 0;
       }
 
   /* 卡片基础样式 */
