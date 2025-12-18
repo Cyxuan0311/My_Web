@@ -8,7 +8,7 @@
     <!-- 主布局容器 -->
     <div class="main-layout">
       <!-- 左侧边栏 -->
-      <aside class="sidebar" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
+      <aside class="sidebar" :class="{ 'sidebar-collapsed': sidebarCollapsed }" :style="{ width: sidebarWidth + 'px' }">
         <div class="sidebar-content">
           <!-- 个人头像和基本信息 -->
           <div class="profile-section">
@@ -32,8 +32,13 @@
                     </div>
                   </div>
             <h2 class="profile-name">Frames</h2>
-            <p class="profile-title">C/C++ & AI基础设施 & HPC 爱好者</p>
-            <p class="profile-desc">专注于高性能计算和AI基础设施</p>
+            <p class="profile-title">{{ profileTitle }}</p>
+            <p class="profile-desc">{{ profileDesc }}</p>
+            <div class="language-switch">
+              <button class="language-btn" @click="toggleLocale">
+                {{ languageButtonLabel }}
+              </button>
+            </div>
           </div>
           
           <!-- 导航菜单 -->
@@ -54,13 +59,18 @@
           
           <!-- 社交链接 -->
           <div class="social-links">
-            <a href="https://github.com/Cyxuan0311" target="_blank" class="social-link github" title="GitHub" data-tooltip="GitHub">
-              <CodeBracketIcon class="social-icon" />
-              <span class="social-text">GitHub</span>
-            </a>
-            <a href="mailto:cyxvvv@gmail.com" class="social-link email" title="邮箱" data-tooltip="邮箱">
-              <EnvelopeIcon class="social-icon" />
-              <span class="social-text">邮箱</span>
+            <a
+              v-for="link in socialLinks"
+              :key="link.key"
+              :href="link.href"
+              target="_blank"
+              class="social-link"
+              :class="link.class"
+              :title="link.tooltip"
+              :data-tooltip="link.tooltip"
+            >
+              <component :is="link.icon" class="social-icon" />
+              <span class="social-text">{{ link.text }}</span>
             </a>
           </div>
         </div>
@@ -72,8 +82,17 @@
         </button>
       </aside>
       
+      <!-- 可拖拽的分割线 -->
+      <div 
+        v-if="!sidebarCollapsed"
+        class="resizer" 
+        :class="{ 'resizing': isResizing }"
+        :style="{ left: sidebarWidth + 'px' }"
+        @mousedown="startResize"
+      ></div>
+      
         <!-- 右侧主内容区 -->
-        <main class="main-content">
+        <main class="main-content" :class="{ 'resizing': isResizing }" :style="{ marginLeft: sidebarWidth + 'px' }">
           <!-- 标签页导航 -->
           <div class="tab-navigation">
             <button 
@@ -91,7 +110,7 @@
           <!-- 标签页内容 -->
           <div class="tab-content" :class="{ 'loading': pageLoading, 'transitioning': pageTransition }">
             <transition name="page-fade" mode="out-in">
-              <component :is="currentComponent" :key="activeTab" />
+              <component :is="currentComponent" :key="isBlogDetail ? `blog-detail-${blogDetailId}` : activeTab" />
             </transition>
             
             <!-- 页面加载覆盖层 -->
@@ -101,7 +120,7 @@
                 <div class="spinner-ring"></div>
                 <div class="spinner-ring"></div>
               </div>
-              <p class="loading-text">加载中...</p>
+              <p class="loading-text">{{ pageLoadingText }}</p>
             </div>
           </div>
           
@@ -121,12 +140,13 @@
 </template>
 
 <script>
-  import { ref, computed, onMounted, onUnmounted } from 'vue'
+  import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
   import Home from './views/Home.vue'
   import About from './views/About.vue'
   import Skills from './views/Skills.vue'
   import Portfolio from './views/Portfolio.vue'
   import Blog from './views/Blog.vue'
+  import BlogDetail from './views/BlogDetail.vue'
   import Contact from './views/Contact.vue'
   import Footer from './components/Footer.vue'
   import { 
@@ -139,6 +159,7 @@
     ChevronLeftIcon,
     ChevronRightIcon
   } from '@heroicons/vue/24/outline'
+  import { useI18n } from './composables/useI18n'
 
 export default {
   name: 'App',
@@ -148,6 +169,7 @@ export default {
     Skills,
     Portfolio,
     Blog,
+    BlogDetail,
     Contact,
     Footer,
     HomeIcon,
@@ -169,9 +191,35 @@ export default {
     const imageError = ref(false)
     const pageLoading = ref(false)
     const pageTransition = ref(false)
+    const sidebarWidth = ref(320)
+    const isResizing = ref(false)
+    const startX = ref(0)
+    const startWidth = ref(320)
+
+    const { toggleLocale, messages } = useI18n()
+    const appText = computed(() => messages.value.app)
+    const menuItems = computed(() => appText.value.menuItems)
+    const tabs = computed(() => appText.value.tabs)
+    const socialLinks = computed(() => appText.value.socialLinks)
+    const profileTitle = computed(() => appText.value.profile.title)
+    const profileDesc = computed(() => appText.value.profile.description)
+    const pageLoadingText = computed(() => appText.value.loadingText)
+    const languageButtonLabel = computed(() => appText.value.languageButton)
+    const tabIds = computed(() => tabs.value.map(tab => tab.id))
+    
+    // 博客详情页状态
+    const blogDetailId = ref(null)
+    
+    // 检查是否在博客详情页
+    const isBlogDetail = computed(() => {
+      return blogDetailId.value !== null || window.location.hash.includes('blog-detail/')
+    })
     
     // 动态组件计算属性
     const currentComponent = computed(() => {
+      if (isBlogDetail.value) {
+        return 'BlogDetail'
+      }
       const componentMap = {
         'home': 'Home',
         'about': 'About',
@@ -182,24 +230,6 @@ export default {
       }
       return componentMap[activeTab.value] || 'Home'
     })
-    
-    const menuItems = [
-      { name: '首页', href: '#home', key: 'home', icon: 'HomeIcon' },
-      { name: '关于我', href: '#about', key: 'about', icon: 'UserIcon' },
-      { name: '技能', href: '#skills', key: 'skills', icon: 'CodeBracketIcon' },
-      { name: '作品展示', href: '#portfolio', key: 'portfolio', icon: 'BriefcaseIcon' },
-      { name: '个人博客', href: '#blog', key: 'blog', icon: 'DocumentTextIcon' },
-      { name: '联系我', href: '#contact', key: 'contact', icon: 'EnvelopeIcon' }
-    ]
-    
-    const tabs = [
-      { id: 'home', name: '首页', icon: 'HomeIcon' },
-      { id: 'about', name: '关于我', icon: 'UserIcon' },
-      { id: 'skills', name: '技能', icon: 'CodeBracketIcon' },
-      { id: 'portfolio', name: '作品', icon: 'BriefcaseIcon' },
-      { id: 'blog', name: '博客', icon: 'DocumentTextIcon' },
-      { id: 'contact', name: '联系', icon: 'EnvelopeIcon' }
-    ]
     
     const updateScrollProgress = () => {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop
@@ -229,7 +259,7 @@ export default {
       const targetId = href.replace('#', '')
       
       // 切换到对应的标签页
-      if (tabs.some(tab => tab.id === targetId)) {
+      if (tabIds.value.includes(targetId)) {
         switchTab(targetId)
       }
     }
@@ -274,6 +304,16 @@ export default {
     
     const toggleSidebar = () => {
       sidebarCollapsed.value = !sidebarCollapsed.value
+      if (sidebarCollapsed.value) {
+        // 折叠时保存当前宽度
+        localStorage.setItem('sidebarWidth', sidebarWidth.value.toString())
+      } else {
+        // 展开时恢复宽度
+        const savedWidth = localStorage.getItem('sidebarWidth')
+        if (savedWidth) {
+          sidebarWidth.value = parseInt(savedWidth, 10)
+        }
+      }
     }
     
     const handleImageLoad = () => {
@@ -286,21 +326,126 @@ export default {
       imageError.value = true
     }
     
+    // 拖拽调整侧边栏宽度
+    const startResize = (e) => {
+      if (sidebarCollapsed.value) return
+      isResizing.value = true
+      startX.value = e.clientX
+      startWidth.value = sidebarWidth.value
+      document.addEventListener('mousemove', handleResize)
+      document.addEventListener('mouseup', stopResize)
+      document.body.style.cursor = 'col-resize'
+      document.body.style.userSelect = 'none'
+      e.preventDefault()
+    }
+    
+    const handleResize = (e) => {
+      if (!isResizing.value) return
+      const diff = e.clientX - startX.value
+      const newWidth = startWidth.value + diff
+      // 限制侧边栏宽度在 200px 到 600px 之间
+      sidebarWidth.value = Math.max(200, Math.min(600, newWidth))
+    }
+    
+    const stopResize = () => {
+      if (!isResizing.value) return
+      isResizing.value = false
+      document.removeEventListener('mousemove', handleResize)
+      document.removeEventListener('mouseup', stopResize)
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+      // 保存到 localStorage
+      localStorage.setItem('sidebarWidth', sidebarWidth.value.toString())
+    }
+    
+    // 定义事件处理函数，以便可以正确移除
+    const handleNavigateToTab = (event) => {
+      const { tabId } = event.detail
+      if (tabId && tabIds.value.includes(tabId)) {
+        // 如果返回博客列表，清除博客详情状态
+        if (tabId === 'blog') {
+          blogDetailId.value = null
+        }
+        switchTab(tabId)
+      }
+    }
+    
+    const handleNavigateBackToBlog = () => {
+      blogDetailId.value = null
+    }
+    
+    const handleNavigateToBlogDetail = async (event) => {
+      const { postId } = event.detail
+      if (postId) {
+        localStorage.setItem('currentBlogId', postId.toString())
+        // 先更新状态，确保组件立即切换
+        blogDetailId.value = postId
+        activeTab.value = 'blog'
+        
+        // 等待DOM更新
+        await nextTick()
+        
+        // 更新URL
+        if (history.pushState) {
+          history.pushState(null, null, `#blog-detail/${postId}`)
+        } else {
+          window.location.hash = `blog-detail/${postId}`
+        }
+        
+        // 滚动到顶部
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
+    }
+    
+    const handleHashChange = () => {
+      const hash = window.location.hash
+      const blogDetailMatch = hash.match(/blog-detail\/(\d+)/)
+      if (blogDetailMatch) {
+        blogDetailId.value = parseInt(blogDetailMatch[1])
+        activeTab.value = 'blog'
+      } else {
+        blogDetailId.value = null
+        if (hash && tabIds.value.includes(hash.replace('#', ''))) {
+          switchTab(hash.replace('#', ''))
+        }
+      }
+    }
+    
     onMounted(() => {
+      // 从 localStorage 恢复侧边栏宽度
+      const savedWidth = localStorage.getItem('sidebarWidth')
+      if (savedWidth) {
+        sidebarWidth.value = parseInt(savedWidth, 10)
+      }
       window.addEventListener('scroll', updateScrollProgress)
       
       // 监听导航事件
-      window.addEventListener('navigate-to-tab', (event) => {
-        const { tabId } = event.detail
-        if (tabId && tabs.some(tab => tab.id === tabId)) {
-          switchTab(tabId)
-        }
-      })
+      window.addEventListener('navigate-to-tab', handleNavigateToTab)
+      
+      // 监听返回博客列表事件
+      window.addEventListener('navigate-back-to-blog', handleNavigateBackToBlog)
+      
+      // 监听博客详情页导航事件
+      window.addEventListener('navigate-to-blog-detail', handleNavigateToBlogDetail)
+      
+      // 监听URL hash变化
+      window.addEventListener('hashchange', handleHashChange)
+      // 初始化时也检查一次
+      handleHashChange()
+      // 如果当前在博客详情页，确保状态正确
+      if (isBlogDetail.value && blogDetailId.value) {
+        activeTab.value = 'blog'
+      }
     })
     
     onUnmounted(() => {
       window.removeEventListener('scroll', updateScrollProgress)
-      window.removeEventListener('navigate-to-tab', () => {})
+      window.removeEventListener('navigate-to-tab', handleNavigateToTab)
+      window.removeEventListener('navigate-back-to-blog', handleNavigateBackToBlog)
+      window.removeEventListener('navigate-to-blog-detail', handleNavigateToBlogDetail)
+      window.removeEventListener('hashchange', handleHashChange)
+      document.removeEventListener('mousemove', handleResize)
+      document.removeEventListener('mouseup', stopResize)
     })
     
     return {
@@ -314,14 +459,25 @@ export default {
       pageLoading,
       pageTransition,
       currentComponent,
+      isBlogDetail,
       menuItems,
       tabs,
+      socialLinks,
+      profileTitle,
+      profileDesc,
+      pageLoadingText,
+      languageButtonLabel,
       scrollToSection,
       scrollToTop,
       toggleSidebar,
       switchTab,
       handleImageLoad,
-      handleImageError
+      handleImageError,
+      toggleLocale,
+      sidebarWidth,
+      isResizing,
+      startResize,
+      blogDetailId
     }
   }
 }
@@ -361,7 +517,7 @@ body {
 
   /* 左侧边栏 */
   .sidebar {
-    width: 300px;
+    width: 320px;
     background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
     color: #e2e8f0;
     position: fixed;
@@ -369,14 +525,23 @@ body {
     top: 0;
     height: 100vh;
     z-index: 1000;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow-y: auto;
     box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
     border-right: 1px solid #4a5568;
   }
+  
+  .sidebar:not(.sidebar-collapsed) {
+    transition: width 0s;
+  }
+  
+  .main-content:has(+ .resizer.resizing),
+  .main-content.resizing {
+    transition: none;
+  }
 
 .sidebar-collapsed {
-  width: 80px;
+  width: 80px !important;
 }
 
 .sidebar-collapsed .sidebar-content {
@@ -707,6 +872,29 @@ body {
   line-height: 1.5;
 }
 
+.language-switch {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.language-btn {
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #63b3ed 0%, #3182ce 100%);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 15px rgba(49, 130, 206, 0.35);
+}
+
+.language-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(49, 130, 206, 0.35);
+}
+
 /* 导航菜单 */
 .sidebar-nav {
   flex: 1;
@@ -931,12 +1119,48 @@ body {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
+  /* 可拖拽的分割线 */
+  .resizer {
+    position: fixed;
+    left: 320px;
+    top: 0;
+    width: 4px;
+    height: 100vh;
+    background: transparent;
+    cursor: col-resize;
+    z-index: 1001;
+    transition: background 0.2s ease;
+  }
+  
+  .resizer:hover {
+    background: rgba(49, 130, 206, 0.5);
+  }
+  
+  .resizer.resizing {
+    background: #3182ce;
+    width: 4px;
+  }
+  
+  .resizer::before {
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: 0;
+    width: 8px;
+    height: 100%;
+    cursor: col-resize;
+  }
+  
   /* 主内容区 */
   .main-content {
     flex: 1;
-    margin-left: 300px;
+    margin-left: 320px;
     transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     min-height: 100vh;
+  }
+  
+  .main-content.resizing {
+    transition: none;
   }
 
   /* 标签页导航 */
@@ -1096,7 +1320,12 @@ body {
     margin: 0;
   }
 
-.sidebar-collapsed + .main-content {
+.sidebar-collapsed + .resizer {
+  left: 80px;
+  display: none;
+}
+
+.sidebar-collapsed + .resizer + .main-content {
   margin-left: 80px;
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
