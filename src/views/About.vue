@@ -1,34 +1,56 @@
 <template>
   <div class="about-page" :class="{ 'content-loading': contentLoading }">
-    <div class="page-header">
-      <h1>关于我</h1>
-      <p>了解我的背景、经历和专业技能</p>
-    </div>
-    
     <div class="about-content">
       <!-- 个人介绍 -->
       <section class="intro-section">
         <div class="intro-card">
           <div class="intro-text">
-            <h2>你好，我是 Frames</h2>
-            <p><HandRaisedIcon class="inline-icon" /> 你好，我是 <strong>Frames</strong>，来自中国武汉。</p>
-            <p><EyeIcon class="inline-icon" /> 我对 <strong>C/C++</strong>、<strong>AI基础设施</strong> 和 <strong>HPC</strong> 充满热情。</p>
-            <p><AcademicCapIcon class="inline-icon" /> 目前正在大学学习，专注于高性能计算和AI基础设施的研究。</p>
-            <p><EnvelopeIcon class="inline-icon" /> 联系我：<a href="mailto:cyxvvv@gmail.com">cyxvvv@gmail.com</a></p>
-            <p><HeartIcon class="inline-icon" /> 我喜欢阅读和看电影，在代码之外享受生活的美好。</p>
+            <h2>{{ aboutText.intro.title }}</h2>
+            <p
+              v-for="(item, index) in aboutText.intro.highlights"
+              :key="index"
+            >
+              <component :is="item.icon" class="inline-icon" />
+              <span v-html="item.text"></span>
+            </p>
           </div>
-          <div class="intro-stats">
-            <div class="stat-item">
-              <span class="stat-number">C/C++</span>
-              <span class="stat-label">核心语言</span>
+          <!-- GitHub语言统计饼状图 -->
+          <div class="github-languages-card">
+            <h3>GitHub 语言使用</h3>
+            <div v-if="languagesLoading" class="languages-loading">
+              <div class="loading-spinner"></div>
+              <p>加载中...</p>
             </div>
-            <div class="stat-item">
-              <span class="stat-number">AI</span>
-              <span class="stat-label">基础设施</span>
+            <div v-else-if="languagesError" class="languages-error">
+              <p>{{ languagesError }}</p>
             </div>
-            <div class="stat-item">
-              <span class="stat-number">HPC</span>
-              <span class="stat-label">高性能计算</span>
+            <div v-else-if="topLanguages.length > 0" class="languages-pie-container">
+              <div class="pie-chart-wrapper">
+                <svg class="pie-chart" viewBox="0 0 200 200">
+                  <g v-for="(lang, index) in topLanguages" :key="lang.name">
+                    <path
+                      :d="getPiePath(lang, index)"
+                      :fill="lang.color"
+                      class="pie-segment"
+                      :data-lang="lang.name"
+                    />
+                  </g>
+                </svg>
+              </div>
+              <div class="pie-legend">
+                <div
+                  class="legend-item"
+                  v-for="(lang, index) in topLanguages.slice(0, 5)"
+                  :key="lang.name"
+                >
+                  <span
+                    class="legend-color"
+                    :style="{ backgroundColor: lang.color }"
+                  ></span>
+                  <span class="legend-name">{{ lang.name }}</span>
+                  <span class="legend-percent">{{ lang.percentage }}%</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -36,14 +58,18 @@
 
       <!-- 教育背景 -->
       <section class="education-section">
-        <h2>教育背景</h2>
+        <h2>{{ aboutText.education.title }}</h2>
         <div class="education-timeline">
-          <div class="timeline-item">
-            <div class="timeline-year">2021 - 至今</div>
+          <div
+            class="timeline-item"
+            v-for="(item, index) in aboutText.education.timeline"
+            :key="index"
+          >
+            <div class="timeline-year">{{ item.year }}</div>
             <div class="timeline-content">
-              <h3>计算机科学与技术</h3>
-              <p>武汉大学</p>
-              <p>专注于高性能计算和人工智能方向的学习与研究</p>
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.school }}</p>
+              <p>{{ item.description }}</p>
             </div>
           </div>
         </div>
@@ -51,40 +77,16 @@
 
       <!-- 技术栈展示 -->
       <section class="tech-stack-section">
-        <h2>技术栈</h2>
+        <h2>{{ aboutText.techStack.title }}</h2>
         <div class="tech-stack-content">
-          <div class="tech-category">
-            <h3>编程语言</h3>
+          <div
+            class="tech-category"
+            v-for="(category, index) in aboutText.techStack.categories"
+            :key="index"
+          >
+            <h3>{{ category.title }}</h3>
             <div class="tech-icons">
-              <img src="https://skillicons.dev/icons?i=c,cpp,python,go" alt="编程语言" />
-            </div>
-          </div>
-          
-          <div class="tech-category">
-            <h3>AI & 机器学习</h3>
-            <div class="tech-icons">
-              <img src="https://skillicons.dev/icons?i=pytorch,tensorflow,docker,kubernetes" alt="AI & 机器学习" />
-            </div>
-          </div>
-          
-          <div class="tech-category">
-            <h3>开发工具</h3>
-            <div class="tech-icons">
-              <img src="https://skillicons.dev/icons?i=git,mysql,postgres,cmake" alt="开发工具" />
-            </div>
-          </div>
-          
-          <div class="tech-category">
-            <h3>操作系统</h3>
-            <div class="tech-icons">
-              <img src="https://skillicons.dev/icons?i=linux,ubuntu" alt="操作系统" />
-            </div>
-          </div>
-          
-          <div class="tech-category">
-            <h3>编辑器</h3>
-            <div class="tech-icons">
-              <img src="https://skillicons.dev/icons?i=vscode,sublime,vim" alt="编辑器" />
+              <img :src="category.img" :alt="category.alt" />
             </div>
           </div>
         </div>
@@ -92,27 +94,16 @@
 
       <!-- 兴趣爱好 -->
       <section class="interests-section">
-        <h2>兴趣爱好</h2>
+        <h2>{{ aboutText.interests.title }}</h2>
         <div class="interests-grid">
-          <div class="interest-item">
-            <BookOpenIcon class="interest-icon" />
-            <h3>阅读</h3>
-            <p>喜欢阅读技术书籍和科幻小说</p>
-          </div>
-          <div class="interest-item">
-            <FilmIcon class="interest-icon" />
-            <h3>电影</h3>
-            <p>享受各种类型的电影，特别是科幻片</p>
-          </div>
-          <div class="interest-item">
-            <BoltIcon class="interest-icon" />
-            <h3>运动</h3>
-            <p>喜欢跑步和健身，保持身体健康</p>
-          </div>
-          <div class="interest-item">
-            <MusicalNoteIcon class="interest-icon" />
-            <h3>音乐</h3>
-            <p>热爱各种音乐，特别是古典音乐</p>
+          <div
+            class="interest-item"
+            v-for="(interest, index) in aboutText.interests.items"
+            :key="index"
+          >
+            <component :is="interest.icon" class="interest-icon" />
+            <h3>{{ interest.title }}</h3>
+            <p>{{ interest.description }}</p>
           </div>
         </div>
       </section>
@@ -121,7 +112,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { 
   HandRaisedIcon, 
   EyeIcon, 
@@ -133,6 +124,7 @@ import {
   BoltIcon,
   MusicalNoteIcon
 } from '@heroicons/vue/24/outline'
+import { useI18n } from '../composables/useI18n'
 
 export default {
   name: 'About',
@@ -149,15 +141,172 @@ export default {
   },
   setup() {
     const contentLoading = ref(true)
+    const languagesLoading = ref(false)
+    const languagesError = ref(null)
+    const topLanguages = ref([])
+    const { messages } = useI18n()
+    const aboutText = computed(() => messages.value.about)
+    
+    // GitHub语言颜色映射
+    const languageColors = {
+      'C++': '#00599C',
+      'C': '#A8B9CC',
+      'Python': '#3776AB',
+      'JavaScript': '#F7DF1E',
+      'TypeScript': '#3178C6',
+      'Java': '#ED8B00',
+      'Go': '#00ADD8',
+      'Rust': '#000000',
+      'CMake': '#064F8C',
+      'Shell': '#89E051',
+      'Makefile': '#427819',
+      'HTML': '#E34C26',
+      'CSS': '#1572B6',
+      'Vue': '#4FC08D',
+      'Dockerfile': '#2496ED',
+      'Markdown': '#083FA1'
+    }
+    
+    // 获取GitHub语言统计
+    const fetchGitHubLanguages = async () => {
+      const username = 'Cyxuan0311'
+      languagesLoading.value = true
+      languagesError.value = null
+      
+      // 检查缓存（1小时有效期）
+      const cacheKey = `github_languages_${username}`
+      const cached = localStorage.getItem(cacheKey)
+      if (cached) {
+        try {
+          const { data, timestamp } = JSON.parse(cached)
+          const now = Date.now()
+          // 缓存1小时
+          if (now - timestamp < 3600000) {
+            topLanguages.value = data
+            languagesLoading.value = false
+            return
+          }
+        } catch (e) {
+          // 缓存无效，继续请求
+        }
+      }
+      
+      try {
+        // 获取用户的所有仓库
+        const reposResponse = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`)
+        if (!reposResponse.ok) {
+          if (reposResponse.status === 403) {
+            throw new Error('API请求频率过高，请稍后重试')
+          }
+          throw new Error('无法获取仓库信息')
+        }
+        const repos = await reposResponse.json()
+        
+        // 只处理前20个仓库以避免API限制
+        const reposToProcess = repos.filter(repo => !repo.fork).slice(0, 20)
+        
+        // 统计所有语言
+        const languageStats = {}
+        let totalBytes = 0
+        
+        // 获取每个仓库的语言信息
+        for (const repo of reposToProcess) {
+          try {
+            const langResponse = await fetch(`https://api.github.com/repos/${username}/${repo.name}/languages`)
+            if (langResponse.ok) {
+              const languages = await langResponse.json()
+              for (const [lang, bytes] of Object.entries(languages)) {
+                if (!languageStats[lang]) {
+                  languageStats[lang] = 0
+                }
+                languageStats[lang] += bytes
+                totalBytes += bytes
+              }
+            }
+            // 添加延迟以避免API限制
+            await new Promise(resolve => setTimeout(resolve, 200))
+          } catch (err) {
+            console.warn(`无法获取 ${repo.name} 的语言信息:`, err)
+          }
+        }
+        
+        // 转换为百分比并排序
+        const languages = Object.entries(languageStats)
+          .map(([name, bytes]) => ({
+            name,
+            bytes,
+            percentage: parseFloat((totalBytes > 0 ? ((bytes / totalBytes) * 100) : 0).toFixed(1)),
+            color: languageColors[name] || '#718096'
+          }))
+          .sort((a, b) => b.bytes - a.bytes)
+          .slice(0, 10) // 只显示前10个
+        
+        topLanguages.value = languages
+        
+        // 保存到缓存
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify({
+            data: languages,
+            timestamp: Date.now()
+          }))
+        } catch (e) {
+          // 忽略缓存错误
+        }
+      } catch (error) {
+        console.error('获取GitHub语言统计失败:', error)
+        languagesError.value = error.message || '无法加载语言统计信息，请稍后重试'
+      } finally {
+        languagesLoading.value = false
+      }
+    }
+    
+    // 计算饼状图的路径
+    const getPiePath = (lang, index) => {
+      const centerX = 100
+      const centerY = 100
+      const radius = 80
+      
+      // 计算起始角度（累计前面所有语言的角度）
+      let startAngle = topLanguages.value.slice(0, index).reduce((sum, l) => {
+        return sum + (l.percentage / 100) * 360
+      }, 0)
+      
+      // 当前语言的角度
+      const angle = (lang.percentage / 100) * 360
+      const endAngle = startAngle + angle
+      
+      // 转换为弧度
+      const startAngleRad = (startAngle - 90) * (Math.PI / 180)
+      const endAngleRad = (endAngle - 90) * (Math.PI / 180)
+      
+      // 计算起点和终点
+      const x1 = centerX + radius * Math.cos(startAngleRad)
+      const y1 = centerY + radius * Math.sin(startAngleRad)
+      const x2 = centerX + radius * Math.cos(endAngleRad)
+      const y2 = centerY + radius * Math.sin(endAngleRad)
+      
+      // 判断是否需要大弧
+      const largeArcFlag = angle > 180 ? 1 : 0
+      
+      // 生成路径
+      return `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`
+    }
     
     onMounted(() => {
       setTimeout(() => {
         contentLoading.value = false
       }, 600)
+      // 加载GitHub语言统计
+      fetchGitHubLanguages()
     })
     
     return {
-      contentLoading
+      contentLoading,
+      aboutText,
+      languagesLoading,
+      languagesError,
+      topLanguages,
+      getPiePath
     }
   }
 }
@@ -218,9 +367,9 @@ export default {
 
 .intro-card {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 2rem;
-  align-items: center;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 3rem;
+  align-items: start;
 }
 
 .intro-text h2 {
@@ -257,6 +406,52 @@ export default {
   border-bottom-color: #3182ce;
 }
 
+/* 技术标签样式 */
+.intro-text :deep(.tech-tag) {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95em;
+  margin: 0 0.2rem;
+  transition: all 0.3s ease;
+  position: relative;
+  top: -1px;
+}
+
+.intro-text :deep(.cpp-tag) {
+  background: linear-gradient(135deg, #00599C 0%, #004482 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 89, 156, 0.3);
+}
+
+.intro-text :deep(.cpp-tag:hover) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 89, 156, 0.4);
+}
+
+.intro-text :deep(.ai-tag) {
+  background: linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.intro-text :deep(.ai-tag:hover) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+}
+
+.intro-text :deep(.hpc-tag) {
+  background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(78, 205, 196, 0.3);
+}
+
+.intro-text :deep(.hpc-tag:hover) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(78, 205, 196, 0.4);
+}
+
 .intro-text strong {
   font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 700;
@@ -264,37 +459,125 @@ export default {
   letter-spacing: -0.01em;
 }
 
-.intro-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-}
-
-.stat-item {
-  text-align: center;
+/* GitHub语言统计卡片 */
+.github-languages-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 16px;
   padding: 1.5rem;
-  background: #f8f9fa;
-  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  height: fit-content;
+  position: sticky;
+  top: 2rem;
 }
 
-.stat-number {
+.github-languages-card h3 {
+  font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+.languages-pie-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.pie-chart-wrapper {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.pie-chart {
+  width: 100%;
+  height: 100%;
+}
+
+.pie-segment {
+  transition: all 0.3s ease;
+  cursor: pointer;
+  stroke: white;
+  stroke-width: 2;
+}
+
+.pie-segment:hover {
+  opacity: 0.85;
+  filter: brightness(1.1);
+}
+
+.pie-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.pie-total {
   display: block;
   font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: 800;
   color: #3182ce;
-  margin-bottom: 0.5rem;
-  letter-spacing: -0.01em;
-  text-shadow: 0 2px 4px rgba(49, 130, 206, 0.1);
+  line-height: 1;
 }
 
-.stat-label {
+.pie-label {
+  display: block;
   font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: #718096;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  margin-top: 0.25rem;
+}
+
+.pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.legend-item:hover {
+  background: rgba(49, 130, 206, 0.05);
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.legend-name {
+  flex: 1;
+  font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1a202c;
+}
+
+.legend-percent {
+  font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #718096;
 }
 
 .education-section,
@@ -394,6 +677,34 @@ export default {
   margin-bottom: 0.8rem;
   line-height: 1.6;
   letter-spacing: 0.01em;
+}
+
+/* GitHub语言统计样式 */
+.languages-loading,
+.languages-error {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #718096;
+}
+
+.languages-loading .loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top: 4px solid #3182ce;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.languages-error {
+  color: #e53e3e;
+  font-size: 0.9rem;
 }
 
 /* 技术栈样式 */
@@ -540,8 +851,18 @@ export default {
     grid-template-columns: 1fr;
   }
   
-  .intro-stats {
-    grid-template-columns: 1fr;
+  .github-languages-card {
+    position: static;
+    margin-top: 2rem;
+  }
+  
+  .pie-chart-wrapper {
+    width: 180px;
+    height: 180px;
+  }
+  
+  .pie-total {
+    font-size: 1.5rem;
   }
   
   .interests-grid {
