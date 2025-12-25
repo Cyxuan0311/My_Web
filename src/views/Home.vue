@@ -3,22 +3,70 @@
     <!-- 顶部工具栏 -->
     <div class="top-bar">
       <div class="top-tools">
-        <!-- 时钟组件 -->
-        <div class="clock-container">
-          <div class="clock-display">
-            <div class="time">{{ currentTime }}</div>
-            <div class="date">{{ currentDate }}</div>
+        <!-- 时钟组件 - TUI风格 -->
+        <div class="tui-clock-container">
+          <div class="tui-clock-header">
+            <span class="tui-header-decoration">┌─</span>
+            <span class="tui-clock-title">SYSTEM TIME</span>
+            <span class="tui-header-decoration">─┐</span>
           </div>
-          <div class="timezone">{{ timezone }}</div>
+          <div class="tui-clock-body">
+            <div class="tui-clock-display">
+              <div class="tui-time-line">
+                <span class="tui-prompt">$</span>
+                <span class="tui-time-label">TIME:</span>
+                <span class="tui-time-value">{{ currentTime }}</span>
+              </div>
+              <div class="tui-date-line">
+                <span class="tui-prompt">$</span>
+                <span class="tui-date-label">DATE:</span>
+                <span class="tui-date-value">{{ currentDate }}</span>
+              </div>
+              <div class="tui-timezone-line">
+                <span class="tui-prompt">$</span>
+                <span class="tui-timezone-label">TZ:</span>
+                <span class="tui-timezone-value">{{ timezone }}</span>
+              </div>
+            </div>
+            <div class="tui-clock-footer">
+              <span class="tui-footer-line">────────────────────────</span>
+            </div>
+          </div>
         </div>
         
-        <!-- 天气组件 -->
-        <div class="weather-container">
-          <div class="weather-icon">🌤️</div>
-          <div class="weather-info">
-            <div class="temperature">{{ weather.temperature }}°C</div>
-            <div class="weather-desc">{{ weather.description }}</div>
-            <div class="location">{{ weather.location }}</div>
+        <!-- 天气组件 - TUI风格 -->
+        <div class="tui-weather-container">
+          <div class="tui-weather-header">
+            <span class="tui-header-decoration">┌─</span>
+            <span class="tui-weather-title">WEATHER</span>
+            <span class="tui-header-decoration">─┐</span>
+          </div>
+          <div class="tui-weather-body">
+            <div class="tui-weather-display">
+              <div class="tui-weather-icon-wrapper">
+                <div class="weather-icon">🌤️</div>
+              </div>
+              <div class="tui-weather-info">
+                <div class="tui-weather-line">
+                  <span class="tui-prompt">$</span>
+                  <span class="tui-weather-label">TEMP:</span>
+                  <span class="tui-weather-value">{{ weather.temperature }}°C</span>
+                </div>
+                <div class="tui-weather-line">
+                  <span class="tui-prompt">$</span>
+                  <span class="tui-weather-label">COND:</span>
+                  <span class="tui-weather-value">{{ weather.description }}</span>
+                </div>
+                <div class="tui-weather-line">
+                  <span class="tui-prompt">$</span>
+                  <span class="tui-weather-label">LOC:</span>
+                  <span class="tui-weather-value">{{ weather.location }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="tui-weather-footer">
+              <span class="tui-footer-line">────────────────────────</span>
+            </div>
           </div>
         </div>
       </div>
@@ -27,76 +75,139 @@
     
       <!-- 主要内容区域 -->
       <div class="home-content" :class="{ 'content-loading': contentLoading }">
-        <!-- 欢迎区域 -->
-        <section class="welcome-section">
-          <div class="welcome-content">
-            <h1 class="welcome-title">{{ homeText.hero.title }}</h1>
-            <p class="welcome-subtitle">{{ homeText.hero.subtitle }}</p>
-            <p class="welcome-desc">{{ homeText.hero.description }}</p>
-            <div class="welcome-actions">
-              <button class="action-btn primary" @click="navigateToSection('about')">
-                {{ homeText.hero.actions.primary }}
-              </button>
-              <button class="action-btn secondary" @click="navigateToSection('contact')">
-                {{ homeText.hero.actions.secondary }}
-              </button>
+        <!-- 终端欢迎区域 -->
+        <section class="terminal-section">
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-buttons">
+                <span class="terminal-btn close"></span>
+                <span class="terminal-btn minimize"></span>
+                <span class="terminal-btn maximize"></span>
+              </div>
+              <div class="terminal-title">Terminal</div>
+            </div>
+            <div class="terminal-body">
+              <div class="terminal-line" v-for="(line, index) in terminalLines" :key="`line-${index}`">
+                <template v-if="line.type === 'command'">
+                  <span class="terminal-prompt">
+                    <span class="prompt-user">frames</span>
+                    <span class="prompt-at">@</span>
+                    <span class="prompt-host">portfolio</span>
+                    <span class="prompt-separator">:</span>
+                    <span class="prompt-path">~</span>
+                    <span class="prompt-symbol">$</span>
+                  </span>
+                  <span class="terminal-command">
+                    {{ line.displayText || line.text }}
+                    <span class="cursor" v-if="line.isTyping">█</span>
+                  </span>
+                </template>
+                <template v-else-if="line.type === 'output'">
+                  <span class="terminal-output">
+                    {{ line.displayText || line.text }}
+                    <span class="cursor" v-if="line.isTyping">█</span>
+                  </span>
+                </template>
+              </div>
             </div>
           </div>
         </section>
 
         <!-- 核心技能展示 -->
-        <section class="skills-preview">
-          <h2 class="section-title">{{ homeText.sections.coreSkills }}</h2>
-          <div class="skills-grid">
-            <div class="skill-item" v-for="skill in coreSkills" :key="skill.name">
-              <component :is="skill.icon" class="skill-icon" />
-              <h3>{{ skill.name }}</h3>
-              <p>{{ skill.description }}</p>
+        <section class="tui-skills-preview">
+          <div class="tui-section-header">
+            <span class="tui-header-decoration">┌─</span>
+            <span class="tui-section-title">{{ homeText.sections.coreSkills }}</span>
+            <span class="tui-header-decoration">─┐</span>
+          </div>
+          <div class="tui-skills-grid">
+            <div class="tui-skill-card" v-for="skill in coreSkills" :key="skill.name">
+              <div class="tui-card-header">
+                <span class="tui-bracket">[</span>
+                <component :is="skill.icon" class="tui-skill-icon" />
+                <span class="tui-skill-name">{{ skill.name }}</span>
+                <span class="tui-bracket">]</span>
+              </div>
+              <div class="tui-card-body">
+                <div class="tui-skill-description">
+                  <span class="tui-prompt">·</span>
+                  <span>{{ skill.description }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
         <!-- 最新项目预览 -->
-        <section class="projects-preview">
-          <h2 class="section-title">{{ homeText.sections.latestProjects }}</h2>
-          <div class="projects-grid">
-              <div class="project-card" v-for="project in featuredProjects.slice(0, 3)" :key="project.id">
-                <div class="project-image" :style="{ background: project.gradient }">
-                  <div class="project-icon-container">
-                    <component :is="project.icon" class="project-icon" />
-                  </div>
+        <section class="tui-projects-preview">
+          <div class="tui-section-header">
+            <span class="tui-header-decoration">┌─</span>
+            <span class="tui-section-title">{{ homeText.sections.latestProjects }}</span>
+            <span class="tui-header-decoration">─┐</span>
+          </div>
+          <div class="tui-projects-grid">
+            <div class="tui-project-card" v-for="project in featuredProjects.slice(0, 3)" :key="project.id">
+              <div class="tui-project-header">
+                <div class="tui-project-icon-wrapper">
+                  <component :is="project.icon" class="tui-project-icon" />
                 </div>
-                <div class="project-info">
-                  <h3>{{ project.title }}</h3>
-                  <p>{{ project.description }}</p>
-                  <div class="project-tech">
-                    <span v-for="tech in project.technologies.slice(0, 3)" :key="tech" class="tech-tag">
-                      {{ tech }}
+              </div>
+              <div class="tui-project-content">
+                <div class="tui-project-title-line">
+                  <span class="tui-prompt">$</span>
+                  <span class="tui-project-title">{{ project.title }}</span>
+                </div>
+                <div class="tui-project-desc-line">
+                  <span class="tui-prompt">·</span>
+                  <span class="tui-project-description">{{ project.description }}</span>
+                </div>
+                <div class="tui-project-tech">
+                  <div class="tui-tech-line">
+                    <span class="tui-prompt">→</span>
+                    <span class="tui-tech-label">TECH:</span>
+                    <span 
+                      v-for="(tech, index) in project.technologies.slice(0, 3)" 
+                      :key="tech"
+                      class="tui-tech-tag"
+                    >
+                      {{ tech }}<span v-if="index < Math.min(project.technologies.length, 3) - 1">,</span>
                     </span>
                   </div>
                 </div>
               </div>
+            </div>
           </div>
-          <div class="view-more">
-            <button class="view-more-btn" @click="navigateToPortfolio">
-              {{ homeText.viewAll }}
+          <div class="tui-view-more">
+            <button class="tui-button" @click="navigateToPortfolio">
+              <span class="tui-button-text">→ {{ homeText.viewAll }}</span>
             </button>
           </div>
         </section>
 
         <!-- 快速导航 -->
-        <section class="quick-nav">
-          <h2 class="section-title">{{ homeText.sections.quickNav }}</h2>
-          <div class="nav-grid">
+        <section class="tui-quick-nav">
+          <div class="tui-section-header">
+            <span class="tui-header-decoration">┌─</span>
+            <span class="tui-section-title">{{ homeText.sections.quickNav }}</span>
+            <span class="tui-header-decoration">─┐</span>
+          </div>
+          <div class="tui-nav-grid">
             <div
-              class="nav-item"
+              class="tui-nav-item"
               v-for="item in quickNavItems"
               :key="item.target"
               @click="navigateToSection(item.target)"
             >
-              <component :is="item.icon" class="nav-icon" />
-              <h3>{{ item.title }}</h3>
-              <p>{{ item.description }}</p>
+              <div class="tui-nav-header">
+                <component :is="item.icon" class="tui-nav-icon" />
+                <span class="tui-nav-title">{{ item.title }}</span>
+              </div>
+              <div class="tui-nav-body">
+                <div class="tui-nav-description">
+                  <span class="tui-prompt">·</span>
+                  <span>{{ item.description }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -178,6 +289,121 @@ export default {
     const featuredProjects = computed(() => homeText.value.featuredProjects)
     const quickNavItems = computed(() => homeText.value.quickNav)
     
+    // 终端相关
+    const terminalLines = ref([])
+    let typeInterval = null
+    
+    // 终端显示的内容
+    const terminalContent = [
+      { 
+        type: 'command', 
+        text: 'who am i', 
+        output: [
+          '你好，我是 Frames',
+          'C/C++ & AI基础设施 & HPC 爱好者',
+          '来自中国武汉，专注于高性能计算和AI基础设施的研究与开发'
+        ]
+      }
+    ]
+    
+    // 打字机效果函数
+    const typeText = (text, callback, speed = 50) => {
+      let index = 0
+      
+      if (typeInterval) {
+        clearInterval(typeInterval)
+      }
+      
+      typeInterval = setInterval(() => {
+        if (index < text.length) {
+          // 更新最后一行（当前正在输入的行）
+          const lastLine = terminalLines.value[terminalLines.value.length - 1]
+          if (lastLine) {
+            lastLine.displayText = text.substring(0, index + 1)
+            lastLine.isTyping = true
+          }
+          index++
+        } else {
+          clearInterval(typeInterval)
+          typeInterval = null
+          // 完成打字
+          const lastLine = terminalLines.value[terminalLines.value.length - 1]
+          if (lastLine) {
+            lastLine.isTyping = false
+          }
+          setTimeout(() => {
+            if (callback) callback()
+          }, 500)
+        }
+      }, speed)
+    }
+    
+    // 显示输出
+    const showOutput = (outputLines, callback) => {
+      let lineIndex = 0
+      const showNextLine = () => {
+        if (lineIndex < outputLines.length) {
+          const outputLine = {
+            type: 'output',
+            text: outputLines[lineIndex],
+            displayText: '',
+            isTyping: true
+          }
+          terminalLines.value.push(outputLine)
+          
+          typeText(outputLines[lineIndex], () => {
+            // 完成打字后，更新行状态
+            const line = terminalLines.value[terminalLines.value.length - 1]
+            if (line) {
+              line.displayText = outputLines[lineIndex]
+              line.isTyping = false
+            }
+            lineIndex++
+            if (lineIndex < outputLines.length) {
+              setTimeout(showNextLine, 300)
+            } else {
+              if (callback) callback()
+            }
+          }, 30)
+        }
+      }
+      showNextLine()
+    }
+    
+    // 执行终端命令
+    const executeCommand = () => {
+      const command = terminalContent[0] // 只有一个命令，循环执行
+      
+      // 显示命令
+      const commandLine = {
+        type: 'command',
+        text: command.text,
+        displayText: '',
+        isTyping: true
+      }
+      terminalLines.value.push(commandLine)
+      
+      // 打字显示命令
+      typeText(command.text, () => {
+        // 完成打字后，更新行状态
+        const line = terminalLines.value[terminalLines.value.length - 1]
+        if (line) {
+          line.displayText = command.text
+          line.isTyping = false
+        }
+        // 显示输出
+        setTimeout(() => {
+          showOutput(command.output, () => {
+            // 循环：清空并重新开始
+            setTimeout(() => {
+              terminalLines.value = []
+              setTimeout(executeCommand, 1500)
+            }, 2000)
+          })
+        }, 500)
+      }, 80)
+    }
+    
     // 时钟更新函数
     const updateClock = () => {
       const now = new Date()
@@ -256,6 +482,10 @@ export default {
       // 模拟初始加载
       setTimeout(() => {
         contentLoading.value = false
+        // 开始终端动画
+        setTimeout(() => {
+          executeCommand()
+        }, 500)
       }, 800)
       
       // 清理定时器
@@ -267,6 +497,9 @@ export default {
     
     onUnmounted(() => {
       window.removeEventListener('scroll', handleScroll)
+      if (typeInterval) {
+        clearInterval(typeInterval)
+      }
     })
     
     return {
@@ -293,7 +526,9 @@ export default {
       
       // 加载
       isLoading,
-      contentLoading
+      contentLoading,
+      // 终端
+      terminalLines
     }
   }
 }
@@ -302,7 +537,7 @@ export default {
 <style scoped>
 .home {
   padding: 0;
-  background: #f8f9fa;
+  background: #0d1117;
   min-height: 100vh;
 }
 
@@ -329,80 +564,163 @@ export default {
 }
 
 
-.clock-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-  border-radius: 24px;
-  padding: 2rem 2.5rem;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+/* TUI 时钟容器 - 圆角 */
+.tui-clock-container {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
+  width: 100%;
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  width: 100%;
-  min-height: 140px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.clock-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.1) 100%);
-  animation: shimmer 3s ease-in-out infinite;
+.tui-clock-container:hover {
+  border-color: #58a6ff;
+  box-shadow: 0 0 20px rgba(88, 166, 255, 0.2);
+  transform: translateY(-2px);
 }
 
-.clock-container:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.clock-display {
+.tui-clock-header {
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  padding: 0.5rem 1rem;
   text-align: center;
-  position: relative;
-  z-index: 1;
+  border-radius: 12px 12px 0 0;
 }
 
-.time {
-  font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: white;
-  letter-spacing: 0.08em;
-  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  margin-bottom: 0.8rem;
-  background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+.tui-header-decoration {
+  color: #58a6ff;
+  font-size: 0.9rem;
+  font-weight: 400;
+  opacity: 0.6;
+  margin: 0 0.5rem;
+}
+
+.tui-clock-title,
+.tui-weather-title {
+  color: #58a6ff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 
+    0 0 10px rgba(88, 166, 255, 0.5),
+    0 0 20px rgba(88, 166, 255, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, #58a6ff 0%, #79c0ff 50%, #58a6ff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  background-size: 200% 100%;
+  animation: title-shimmer 3s ease-in-out infinite;
+  position: relative;
+  display: inline-block;
 }
 
-.date {
-  font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 0.9rem;
+@keyframes title-shimmer {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.tui-clock-title::before,
+.tui-weather-title::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -2px;
+  right: -2px;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent, rgba(88, 166, 255, 0.1), transparent);
+  border-radius: 4px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tui-clock-container:hover .tui-clock-title::before,
+.tui-weather-container:hover .tui-weather-title::before {
+  opacity: 1;
+}
+
+.tui-clock-body {
+  padding: 1.5rem;
+  color: #c9d1d9;
+}
+
+.tui-clock-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tui-time-line,
+.tui-date-line,
+.tui-timezone-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.tui-prompt {
+  color: #58a6ff;
+  font-weight: 600;
+  margin-right: 0.25rem;
+}
+
+.tui-time-label,
+.tui-date-label,
+.tui-timezone-label {
+  color: #8b949e;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
-  letter-spacing: 0.02em;
-  margin-bottom: 0.5rem;
+  min-width: 50px;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
 }
 
-.timezone {
-  font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 0.8rem;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.6);
-  letter-spacing: 0.05em;
+.tui-time-value {
+  color: #79c0ff;
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+}
+
+.tui-date-value {
+  color: #c9d1d9;
+  font-weight: 500;
+}
+
+.tui-timezone-value {
+  color: #58a6ff;
+  font-weight: 600;
   text-transform: uppercase;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 0.3rem 0.8rem;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid #30363d;
+  background: #161b22;
+}
+
+.tui-clock-footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #30363d;
+  text-align: center;
+}
+
+.tui-footer-line {
+  color: #30363d;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
 }
 
 @keyframes shimmer {
@@ -415,82 +733,112 @@ export default {
 }
 
 /* 天气组件 */
-.weather-container {
+/* TUI 天气容器 - 圆角 */
+.tui-weather-container {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
+  width: 100%;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tui-weather-container:hover {
+  border-color: #58a6ff;
+  box-shadow: 0 0 20px rgba(88, 166, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.tui-weather-header {
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  border-radius: 12px 12px 0 0;
+}
+
+.tui-weather-title {
+  color: #58a6ff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.tui-weather-body {
+  padding: 1.5rem;
+  color: #c9d1d9;
+}
+
+.tui-weather-display {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.tui-weather-icon-wrapper {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 24px;
-  padding: 2rem 2.5rem;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  min-height: 140px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.weather-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.1) 100%);
-  animation: shimmer 4s ease-in-out infinite;
-}
-
-.weather-container:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.weather-icon {
-  font-size: 3rem;
-  margin-right: 1.5rem;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  padding: 0.5rem;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
   transition: all 0.3s ease;
 }
 
-.weather-container:hover .weather-icon {
-  transform: scale(1.1) rotate(5deg);
+.tui-weather-container:hover .tui-weather-icon-wrapper {
+  border-color: #58a6ff;
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.2);
 }
 
-.weather-info {
-  text-align: left;
-  position: relative;
-  z-index: 1;
+.weather-icon {
+  font-size: 2.5rem;
+  transition: all 0.3s ease;
+  display: block;
 }
 
-.temperature {
-  font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: white;
-  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  margin-bottom: 0.4rem;
-  background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.tui-weather-container:hover .weather-icon {
+  transform: scale(1.1);
 }
 
-.weather-desc {
-  font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 0.9rem;
+.tui-weather-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tui-weather-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.tui-weather-label {
+  color: #8b949e;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 0.2rem;
+  min-width: 50px;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
 }
 
-.location {
-  font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 0.8rem;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.7);
+.tui-weather-value {
+  color: #79c0ff;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.tui-weather-footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #30363d;
+  text-align: center;
 }
 
 
@@ -509,382 +857,536 @@ export default {
     opacity: 0.6;
   }
 
-  /* 欢迎区域 */
-  .welcome-section {
-    text-align: center;
-    padding: 4rem 0;
-    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-    color: white;
-    border-radius: 20px;
+  /* 终端区域 - Zsh 主题风格 */
+  .terminal-section {
     margin-bottom: 3rem;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 0.8s ease-out;
   }
 
-  .welcome-section::before {
+  .terminal-window {
+    background: #0d1117;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', 'source-code-pro', monospace;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .terminal-header {
+    background: linear-gradient(180deg, #1c2128 0%, #0d1117 100%);
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .terminal-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .terminal-btn {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    transition: all 0.2s ease;
+  }
+
+  .terminal-btn.close {
+    background: #ff5f56;
+    box-shadow: 0 0 0 0.5px rgba(255, 95, 86, 0.5);
+  }
+
+  .terminal-btn.close:hover {
+    background: #ff7875;
+  }
+
+  .terminal-btn.minimize {
+    background: #ffbd2e;
+    box-shadow: 0 0 0 0.5px rgba(255, 189, 46, 0.5);
+  }
+
+  .terminal-btn.minimize:hover {
+    background: #ffd43b;
+  }
+
+  .terminal-btn.maximize {
+    background: #27c93f;
+    box-shadow: 0 0 0 0.5px rgba(39, 201, 63, 0.5);
+  }
+
+  .terminal-btn.maximize:hover {
+    background: #34d058;
+  }
+
+  .terminal-title {
+    color: #8b949e;
+    font-size: 0.85rem;
+    font-weight: 500;
+    flex: 1;
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+
+  .terminal-body {
+    padding: 1.5rem;
+    background: #0d1117;
+    color: #c9d1d9;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 250px;
+    position: relative;
+  }
+
+  .terminal-body::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    background: 
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255, 255, 255, 0.02) 2px,
+        rgba(255, 255, 255, 0.02) 4px
+      );
+    pointer-events: none;
     opacity: 0.3;
   }
 
-  .welcome-content {
+  .terminal-line {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: flex-start;
+    word-wrap: break-word;
     position: relative;
     z-index: 1;
   }
 
-  .welcome-title {
-    font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 3.5rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    animation: fadeInUp 0.8s ease-out;
+  .terminal-prompt {
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 
-  .welcome-subtitle {
-    font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 1.6rem;
+  /* Zsh 主题样式 - 类似 Powerlevel10k */
+  .prompt-user {
+    color: #58a6ff;
+    font-weight: 600;
+  }
+
+  .prompt-at {
+    color: #8b949e;
+    margin: 0 2px;
+  }
+
+  .prompt-host {
+    color: #58a6ff;
     font-weight: 500;
-    margin-bottom: 1rem;
-    opacity: 0.9;
-    letter-spacing: 0.01em;
-    animation: fadeInUp 0.8s ease-out 0.2s both;
   }
 
-  .welcome-desc {
-    font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 1.2rem;
-    font-weight: 400;
-    margin-bottom: 2rem;
-    opacity: 0.8;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.6;
-    letter-spacing: 0.01em;
-    animation: fadeInUp 0.8s ease-out 0.4s both;
+  .prompt-separator {
+    color: #8b949e;
+    margin: 0 2px;
   }
 
-  .welcome-actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    animation: fadeInUp 0.8s ease-out 0.6s both;
+  .prompt-path {
+    color: #79c0ff;
+    font-weight: 500;
   }
 
-  .action-btn {
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 50px;
-    font-size: 1rem;
+  .prompt-symbol {
+    color: #58a6ff;
+    margin-left: 0.5rem;
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
+  }
+
+  .terminal-command {
+    color: #f0883e;
+    flex: 1;
+    font-weight: 500;
+  }
+
+  .terminal-output {
+    color: #c9d1d9;
+    flex: 1;
+    margin-left: 0;
+    display: block;
+    padding-left: 0;
+    line-height: 1.9;
+  }
+
+  .cursor {
     display: inline-block;
-  }
-
-  .action-btn.primary {
-    background: white;
-    color: #1a202c;
-    font-weight: 600;
-  }
-
-  .action-btn.primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  }
-
-  .action-btn.secondary {
-    background: transparent;
-    color: white;
-    border: 2px solid white;
-    font-weight: 600;
-  }
-
-  .action-btn.secondary:hover {
-    background: white;
-    color: #1a202c;
-    transform: translateY(-2px);
-  }
-
-  /* 区域标题 */
-  .section-title {
-    font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 2.2rem;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 2.5rem;
-    color: #1a202c;
-    letter-spacing: -0.01em;
-    line-height: 1.3;
-    position: relative;
-  }
-
-  .section-title::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    bottom: -10px;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 4px;
-    background: linear-gradient(45deg, #3182ce, #2b6cb0);
+    width: 8px;
+    height: 1.2em;
+    background: #58a6ff;
+    margin-left: 3px;
+    animation: blink 1s infinite;
+    vertical-align: text-bottom;
     border-radius: 2px;
+    box-shadow: 0 0 8px rgba(88, 166, 255, 0.6);
   }
 
-  /* 技能预览 */
-  .skills-preview {
+  @keyframes blink {
+    0%, 50% {
+      opacity: 1;
+    }
+    51%, 100% {
+      opacity: 0.3;
+    }
+  }
+
+  /* 终端滚动条样式 - GitHub 风格 */
+  .terminal-body::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .terminal-body::-webkit-scrollbar-track {
+    background: #0d1117;
+  }
+
+  .terminal-body::-webkit-scrollbar-thumb {
+    background: #21262d;
+    border-radius: 5px;
+    border: 2px solid #0d1117;
+  }
+
+  .terminal-body::-webkit-scrollbar-thumb:hover {
+    background: #30363d;
+  }
+
+  /* TUI 区域标题 */
+  .tui-section-header {
+    background: transparent;
+    border: none;
+    padding: 0.75rem 0;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .tui-section-title {
+    color: #58a6ff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 
+      0 0 10px rgba(88, 166, 255, 0.5),
+      0 0 20px rgba(88, 166, 255, 0.3),
+      0 2px 4px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(135deg, #58a6ff 0%, #79c0ff 50%, #58a6ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    background-size: 200% 100%;
+    animation: title-shimmer 3s ease-in-out infinite;
+    position: relative;
+    display: inline-block;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
+  }
+
+  /* TUI 技能预览 */
+  .tui-skills-preview {
     margin-bottom: 4rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
   }
 
-  .skills-grid {
+  .tui-skills-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
+    gap: 1rem;
+    margin-top: 0;
+    background: transparent;
   }
 
-  .skill-item {
-    background: white;
-    padding: 2rem;
-    border-radius: 15px;
-    text-align: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
+  .tui-skill-card {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 1.25rem;
+    transition: all 0.2s ease;
     display: flex;
     flex-direction: column;
+  }
+
+  .tui-skill-card:hover {
+    border-color: #58a6ff;
+    background: #161b22;
+  }
+
+  .tui-card-header {
+    display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
   }
 
-  .skill-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  .tui-bracket {
+    color: #58a6ff;
+    font-weight: 600;
+    font-size: 1rem;
   }
 
-  .skill-icon {
-    width: 48px;
-    height: 48px;
-    margin: 0 auto 1rem;
-    color: #3182ce;
+  .tui-skill-icon {
+    width: 24px;
+    height: 24px;
+    color: #58a6ff;
     flex-shrink: 0;
   }
 
-      .skill-item h3 {
-        font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 1.4rem;
-        font-weight: 700;
-        margin-bottom: 0.8rem;
-        color: #1a202c;
-        letter-spacing: -0.01em;
-        line-height: 1.3;
-        text-align: center;
-        width: 100%;
-      }
-
-      .skill-item p {
-        font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 1rem;
-        font-weight: 400;
-        color: #4a5568;
-        line-height: 1.6;
-        letter-spacing: 0.01em;
-        text-align: center;
-        width: 100%;
-      }
-
-  /* 项目预览 */
-  .projects-preview {
-    margin-bottom: 4rem;
+  .tui-skill-name {
+    color: #58a6ff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
 
-  .projects-grid {
+  .tui-card-body {
+    flex: 1;
+  }
+
+  .tui-skill-description {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    color: #8b949e;
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+
+  .tui-card-footer {
+    display: none;
+  }
+
+  /* TUI 项目预览 */
+  .tui-projects-preview {
+    margin-bottom: 4rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
+  }
+
+  .tui-projects-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
+    gap: 1rem;
     margin-bottom: 2rem;
+    margin-top: 0;
+    background: transparent;
   }
 
-  .project-card {
-    background: white;
-    border-radius: 15px;
+  .tui-project-card {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-  }
-
-  .project-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  }
-
-      .project-image {
-        height: 200px;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-      }
-
-      .project-icon-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
-      }
-
-      .project-icon {
-        width: 80px;
-        height: 80px;
-        color: white;
-        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
-        transition: all 0.3s ease;
-      }
-
-      .project-card:hover .project-icon {
-        transform: scale(1.1) rotate(5deg);
-      }
-
-  .project-info {
-    padding: 1.5rem;
-  }
-
-      .project-info h3 {
-        font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 1.3rem;
-        font-weight: 700;
-        margin-bottom: 0.8rem;
-        color: #1a202c;
-        letter-spacing: -0.01em;
-        line-height: 1.3;
-      }
-
-      .project-info p {
-        font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 1rem;
-        font-weight: 400;
-        color: #4a5568;
-        line-height: 1.6;
-        margin-bottom: 1rem;
-        letter-spacing: 0.01em;
-      }
-
-  .project-tech {
+    transition: all 0.2s ease;
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+  }
+
+  .tui-project-card:hover {
+    border-color: #58a6ff;
+    background: #161b22;
+  }
+
+  .tui-project-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    background: #161b22;
+  }
+
+  .tui-project-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .tui-project-icon {
+    width: 48px;
+    height: 48px;
+    color: #58a6ff;
+    transition: all 0.2s ease;
+  }
+
+  .tui-project-card:hover .tui-project-icon {
+    transform: scale(1.1);
+  }
+
+  .tui-project-content {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex: 1;
+  }
+
+  .tui-project-title-line {
+    display: flex;
+    align-items: center;
     gap: 0.5rem;
   }
 
-      .tech-tag {
-        font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
-        background: #f8f9fa;
-        color: #495057;
-        padding: 0.4rem 0.9rem;
-        border-radius: 12px;
-        font-size: 0.85rem;
-        font-weight: 500;
-        letter-spacing: 0.01em;
-      }
-
-  .view-more {
-    text-align: center;
-  }
-
-  .view-more-btn {
-    background: linear-gradient(45deg, #20c997, #17a2b8);
-    color: white;
-    border: none;
-    padding: 1rem 2rem;
-    border-radius: 50px;
+  .tui-project-title {
     font-size: 1rem;
     font-weight: 600;
+    color: #58a6ff;
+  }
+
+  .tui-project-desc-line {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .tui-project-description {
+    color: #8b949e;
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+
+  .tui-project-tech {
+    padding: 0.5rem 0;
+  }
+
+  .tui-tech-line {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .tui-tech-label {
+    color: #8b949e;
+    font-weight: 500;
+  }
+
+  .tui-tech-tag {
+    color: #79c0ff;
+    font-weight: 400;
+  }
+
+  .tui-project-footer {
+    display: none;
+  }
+
+  .tui-view-more {
+    text-align: center;
+  }
+
+  .tui-button {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 0.625rem 1.25rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
   }
 
-  .view-more-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(32, 201, 151, 0.3);
+  .tui-button:hover {
+    border-color: #58a6ff;
+    background: #161b22;
   }
 
-  /* 快速导航 */
-  .quick-nav {
+  .tui-button-text {
+    color: #58a6ff;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  /* TUI 快速导航 */
+  .tui-quick-nav {
     margin-bottom: 4rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
   }
 
-  .nav-grid {
+  .tui-nav-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
+    gap: 1rem;
+    margin-top: 0;
+    background: transparent;
   }
 
-  .nav-item {
-    background: white;
-    padding: 2rem 1.5rem;
-    border-radius: 15px;
-    text-align: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
+  .tui-nav-item {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 1.25rem;
+    transition: all 0.2s ease;
     cursor: pointer;
     display: flex;
     flex-direction: column;
+    min-height: 140px;
+  }
+
+  .tui-nav-item:hover {
+    border-color: #58a6ff;
+    background: #161b22;
+  }
+
+  .tui-nav-header {
+    display: flex;
     align-items: center;
     justify-content: flex-start;
-    min-height: 180px;
-    overflow: hidden;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
   }
 
-  .nav-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  }
-
-  .nav-icon {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 1rem;
-    color: #3182ce;
+  .tui-nav-icon {
+    width: 24px;
+    height: 24px;
+    color: #58a6ff;
     flex-shrink: 0;
+    transition: all 0.2s ease;
   }
 
-      .nav-item h3 {
-        font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 1.3rem;
-        font-weight: 700;
-        margin-bottom: 0.8rem;
-        color: #1a202c;
-        letter-spacing: -0.01em;
-        line-height: 1.3;
-        width: 100%;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        word-break: break-word;
-        hyphens: auto;
-      }
+  .tui-nav-item:hover .tui-nav-icon {
+    transform: scale(1.1);
+  }
 
-      .nav-item p {
-        font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 1rem;
-        font-weight: 400;
-        color: #4a5568;
-        line-height: 1.6;
-        letter-spacing: 0.01em;
-        width: 100%;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        word-break: break-word;
-        hyphens: auto;
-        margin: 0;
-      }
+  .tui-nav-title {
+    color: #58a6ff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .tui-nav-body {
+    flex: 1;
+  }
+
+  .tui-nav-description {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    color: #8b949e;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .tui-nav-footer {
+    display: none;
+  }
 
   /* 卡片基础样式 */
   .content-card {
@@ -1411,7 +1913,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(13, 17, 23, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1421,14 +1923,14 @@ export default {
 
   .loading-spinner {
     text-align: center;
-    color: #3182ce;
+    color: #58a6ff;
   }
 
   .spinner {
     width: 50px;
     height: 50px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3182ce;
+    border: 4px solid #21262d;
+    border-top: 4px solid #58a6ff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto 1rem;
@@ -1437,6 +1939,7 @@ export default {
   .loading-spinner p {
     font-size: 1.1rem;
     font-weight: 500;
+    color: #c9d1d9;
     animation: pulse 1.5s ease-in-out infinite;
   }
 
@@ -1447,18 +1950,19 @@ export default {
   right: 30px;
   width: 50px;
   height: 50px;
-  background: linear-gradient(45deg, #20c997, #17a2b8);
-  color: white;
-  border: none;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  color: #58a6ff;
   border-radius: 50%;
   cursor: pointer;
   font-size: 1.5rem;
   font-weight: bold;
-  box-shadow: 0 4px 15px rgba(32, 201, 151, 0.3);
+  box-shadow: 0 4px 15px rgba(88, 166, 255, 0.2);
   transition: all 0.3s ease;
   opacity: 0;
   visibility: hidden;
   z-index: 1000;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
 }
 
 .scroll-to-top.visible {
@@ -1468,7 +1972,9 @@ export default {
 
 .scroll-to-top:hover {
   transform: translateY(-3px) scale(1.1);
-  box-shadow: 0 8px 25px rgba(32, 201, 151, 0.4);
+  border-color: #58a6ff;
+  box-shadow: 0 8px 25px rgba(88, 166, 255, 0.4);
+  background: #161b22;
 }
 
   /* 响应式设计 */
@@ -1494,17 +2000,19 @@ export default {
       width: 200px;
     }
     
-    .skills-grid {
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-    
-    .projects-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .nav-grid {
+    .tui-skills-grid {
       grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+    
+    .tui-projects-grid {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+    
+    .tui-nav-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
     }
   }
 
@@ -1513,65 +2021,95 @@ export default {
       gap: 1rem;
     }
     
-    .clock-container {
+    .tui-clock-container {
       width: 100%;
       max-width: 350px;
-      padding: 1.2rem 1.5rem;
     }
     
-    .time {
-      font-size: 1.8rem;
+    .tui-clock-body {
+      padding: 1rem;
     }
     
-    .date {
-      font-size: 0.8rem;
-    }
-    
-    .timezone {
-      font-size: 0.7rem;
-    }
-    
-    .weather-container {
-      width: 100%;
-      max-width: 350px;
-      padding: 1.2rem 1.5rem;
-    }
-    
-    .temperature {
-      font-size: 1.6rem;
-    }
-    
-    .weather-desc {
-      font-size: 0.8rem;
-    }
-    
-    .location {
-      font-size: 0.7rem;
-    }
-    
-    .weather-icon {
-      font-size: 2.2rem;
-      margin-right: 1rem;
-    }
-    
-    .welcome-section {
-      padding: 2rem 0;
-    }
-    
-    .welcome-title {
-      font-size: 1.8rem;
-    }
-    
-    .welcome-subtitle {
+    .tui-time-value {
       font-size: 1rem;
     }
     
-    .skills-grid {
-      grid-template-columns: 1fr;
+    .tui-time-line,
+    .tui-date-line,
+    .tui-timezone-line {
+      font-size: 0.85rem;
     }
     
-    .nav-grid {
+    .tui-time-label,
+    .tui-date-label,
+    .tui-timezone-label {
+      min-width: 40px;
+      font-size: 0.75rem;
+    }
+    
+    .tui-weather-container {
+      width: 100%;
+      max-width: 350px;
+    }
+    
+    .tui-weather-body {
+      padding: 1rem;
+    }
+    
+    .tui-weather-display {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+    }
+    
+    .tui-weather-icon-wrapper {
+      margin: 0 auto;
+    }
+    
+    .weather-icon {
+      font-size: 2rem;
+    }
+    
+    .tui-weather-line {
+      font-size: 0.85rem;
+      justify-content: center;
+    }
+    
+    .tui-weather-label {
+      min-width: 40px;
+      font-size: 0.75rem;
+    }
+    
+    .tui-weather-value {
+      font-size: 0.9rem;
+    }
+    
+    .terminal-section {
+      margin-bottom: 2rem;
+    }
+    
+    .terminal-body {
+      padding: 1rem;
+      font-size: 0.85rem;
+      min-height: 200px;
+    }
+    
+    .terminal-header {
+      padding: 0.5rem 0.75rem;
+    }
+    
+    .terminal-title {
+      font-size: 0.75rem;
+    }
+    
+    .tui-skills-grid {
       grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+    
+    .tui-nav-grid {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
     }
   }
 
@@ -1587,45 +2125,48 @@ export default {
     padding: 0 1rem;
   }
   
-  .clock-container {
+  .tui-clock-container {
     width: 100%;
     max-width: 400px;
-    padding: 1.5rem 2rem;
   }
   
-  .time {
-    font-size: 2rem;
+  .tui-clock-body {
+    padding: 1.25rem;
   }
   
-  .date {
-    font-size: 0.85rem;
+  .tui-time-value {
+    font-size: 1.05rem;
   }
   
-  .timezone {
-    font-size: 0.75rem;
+  .tui-time-line,
+  .tui-date-line,
+  .tui-timezone-line {
+    font-size: 0.9rem;
   }
   
-  .weather-container {
+  .tui-weather-container {
     width: 100%;
     max-width: 400px;
-    padding: 1.5rem 2rem;
   }
   
-  .temperature {
-    font-size: 1.8rem;
+  .tui-weather-body {
+    padding: 1.25rem;
   }
   
-  .weather-desc {
-    font-size: 0.85rem;
-  }
-  
-  .location {
-    font-size: 0.75rem;
+  .tui-weather-display {
+    gap: 1.25rem;
   }
   
   .weather-icon {
-    font-size: 2.5rem;
-    margin-right: 1.2rem;
+    font-size: 2.2rem;
+  }
+  
+  .tui-weather-line {
+    font-size: 0.9rem;
+  }
+  
+  .tui-weather-value {
+    font-size: 0.9rem;
   }
   
   .content-grid {
