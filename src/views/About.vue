@@ -1,22 +1,32 @@
 <template>
   <div class="about-page" :class="{ 'content-loading': contentLoading }">
     <div class="about-content">
-      <!-- 个人介绍 -->
-      <section class="intro-section">
-        <div class="intro-card">
-          <div class="intro-text">
-            <h2>{{ aboutText.intro.title }}</h2>
-            <p
+      <!-- 个人介绍 - TUI风格 -->
+      <section class="tui-intro-section">
+        <div class="tui-section-header">
+          <span class="tui-header-decoration">┌─</span>
+          <span class="tui-section-title">{{ aboutText.intro.title }}</span>
+          <span class="tui-header-decoration">─┐</span>
+        </div>
+        <div class="tui-intro-card">
+          <div class="tui-intro-text">
+            <div
+              class="tui-intro-line"
               v-for="(item, index) in aboutText.intro.highlights"
               :key="index"
             >
-              <component :is="item.icon" class="inline-icon" />
-              <span v-html="item.text"></span>
-            </p>
+              <span class="tui-prompt">$</span>
+              <component :is="item.icon" class="tui-inline-icon" />
+              <span v-html="item.text" class="tui-intro-content"></span>
+            </div>
           </div>
-          <!-- GitHub语言统计饼状图 -->
-          <div class="github-languages-card">
-            <h3>GitHub 语言使用</h3>
+          <!-- GitHub语言统计饼状图 - TUI风格 -->
+          <div class="tui-github-languages-card">
+            <div class="tui-card-header">
+              <span class="tui-header-decoration">┌─</span>
+              <span class="tui-card-title">GITHUB LANGUAGES</span>
+              <span class="tui-header-decoration">─┐</span>
+            </div>
             <div v-if="languagesLoading" class="languages-loading">
               <div class="loading-spinner"></div>
               <p>加载中...</p>
@@ -56,54 +66,87 @@
         </div>
       </section>
 
-      <!-- 教育背景 -->
-      <section class="education-section">
-        <h2>{{ aboutText.education.title }}</h2>
-        <div class="education-timeline">
+      <!-- 教育背景 - TUI风格 -->
+      <section class="tui-education-section">
+        <div class="tui-section-header">
+          <span class="tui-header-decoration">┌─</span>
+          <span class="tui-section-title">{{ aboutText.education.title }}</span>
+          <span class="tui-header-decoration">─┐</span>
+        </div>
+        <div class="tui-education-timeline">
           <div
-            class="timeline-item"
+            class="tui-timeline-item"
             v-for="(item, index) in aboutText.education.timeline"
             :key="index"
           >
-            <div class="timeline-year">{{ item.year }}</div>
-            <div class="timeline-content">
-              <h3>{{ item.title }}</h3>
-              <p>{{ item.school }}</p>
-              <p>{{ item.description }}</p>
+            <div class="tui-timeline-year">
+              <span class="tui-prompt">$</span>
+              <span>{{ item.year }}</span>
+            </div>
+            <div class="tui-timeline-content">
+              <div class="tui-timeline-line">
+                <span class="tui-prompt">→</span>
+                <span class="tui-timeline-title">{{ item.title }}</span>
+              </div>
+              <div class="tui-timeline-line">
+                <span class="tui-prompt">·</span>
+                <span class="tui-timeline-text">{{ item.school }}</span>
+              </div>
+              <div class="tui-timeline-line">
+                <span class="tui-prompt">·</span>
+                <span class="tui-timeline-text">{{ item.description }}</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- 技术栈展示 -->
-      <section class="tech-stack-section">
-        <h2>{{ aboutText.techStack.title }}</h2>
-        <div class="tech-stack-content">
+      <!-- 技术栈展示 - TUI风格 -->
+      <section class="tui-tech-stack-section">
+        <div class="tui-section-header">
+          <span class="tui-header-decoration">┌─</span>
+          <span class="tui-section-title">{{ aboutText.techStack.title }}</span>
+          <span class="tui-header-decoration">─┐</span>
+        </div>
+        <div class="tui-tech-stack-content">
           <div
-            class="tech-category"
+            class="tui-tech-category"
             v-for="(category, index) in aboutText.techStack.categories"
             :key="index"
           >
-            <h3>{{ category.title }}</h3>
-            <div class="tech-icons">
+            <div class="tui-category-header">
+              <span class="tui-prompt">→</span>
+              <span class="tui-category-title">{{ category.title }}</span>
+            </div>
+            <div class="tui-tech-icons">
               <img :src="category.img" :alt="category.alt" />
             </div>
           </div>
         </div>
       </section>
 
-      <!-- 兴趣爱好 -->
-      <section class="interests-section">
-        <h2>{{ aboutText.interests.title }}</h2>
-        <div class="interests-grid">
+      <!-- 兴趣爱好 - TUI风格 -->
+      <section class="tui-interests-section">
+        <div class="tui-section-header">
+          <span class="tui-header-decoration">┌─</span>
+          <span class="tui-section-title">{{ aboutText.interests.title }}</span>
+          <span class="tui-header-decoration">─┐</span>
+        </div>
+        <div class="tui-interests-grid">
           <div
-            class="interest-item"
+            class="tui-interest-item"
             v-for="(interest, index) in aboutText.interests.items"
             :key="index"
           >
-            <component :is="interest.icon" class="interest-icon" />
-            <h3>{{ interest.title }}</h3>
-            <p>{{ interest.description }}</p>
+            <div class="tui-interest-header">
+              <component :is="interest.icon" class="tui-interest-icon" />
+              <span class="tui-prompt">→</span>
+              <span class="tui-interest-title">{{ interest.title }}</span>
+            </div>
+            <div class="tui-interest-line">
+              <span class="tui-prompt">·</span>
+              <span class="tui-interest-desc">{{ interest.description }}</span>
+            </div>
           </div>
         </div>
       </section>
@@ -318,10 +361,63 @@ export default {
   max-width: 1000px;
   margin: 0 auto;
   transition: opacity 0.4s ease;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
+  color: #c9d1d9;
 }
 
 .about-page.content-loading {
   opacity: 0.6;
+}
+
+/* TUI 通用样式 */
+.tui-header-decoration {
+  color: #58a6ff;
+  font-size: 0.9rem;
+  font-weight: 400;
+  opacity: 0.6;
+  margin: 0 0.5rem;
+}
+
+.tui-section-title,
+.tui-card-title {
+  color: #58a6ff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 
+    0 0 10px rgba(88, 166, 255, 0.5),
+    0 0 20px rgba(88, 166, 255, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, #58a6ff 0%, #79c0ff 50%, #58a6ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% 100%;
+  animation: title-shimmer 3s ease-in-out infinite;
+}
+
+@keyframes title-shimmer {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.tui-section-header,
+.tui-card-header {
+  text-align: center;
+  padding: 1rem 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #30363d;
+}
+
+.tui-prompt {
+  color: #58a6ff;
+  font-weight: 600;
+  margin-right: 0.5rem;
 }
 
 .page-header {
@@ -358,38 +454,70 @@ export default {
   gap: 3rem;
 }
 
-.intro-section {
-  background: white;
-  border-radius: 20px;
+.tui-intro-section {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
 }
 
-.intro-card {
+.tui-intro-card {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
   gap: 3rem;
   align-items: start;
 }
 
-.intro-text h2 {
-  font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 1.5rem;
-  letter-spacing: -0.01em;
-  line-height: 1.3;
+.tui-intro-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.intro-text p {
-  font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 1.1rem;
-  font-weight: 400;
-  color: #4a5568;
-  line-height: 1.7;
-  margin-bottom: 1.2rem;
-  letter-spacing: 0.01em;
+.tui-intro-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #c9d1d9;
+}
+
+.tui-inline-icon {
+  width: 18px;
+  height: 18px;
+  color: #58a6ff;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+
+.tui-intro-content {
+  color: #c9d1d9;
+  flex: 1;
+}
+
+/* 邮箱链接特殊样式 */
+.tui-intro-content a[href^="mailto:"] {
+  color: #79c0ff;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.2rem 0.5rem;
+  background: rgba(121, 192, 255, 0.1);
+  border: 1px solid rgba(121, 192, 255, 0.3);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  display: inline-block;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
+  font-size: 0.95em;
+}
+
+.tui-intro-content a[href^="mailto:"]:hover {
+  color: #58a6ff;
+  background: rgba(88, 166, 255, 0.15);
+  border-color: #58a6ff;
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
+  transform: translateY(-1px);
 }
 
 .intro-text a {
@@ -459,25 +587,22 @@ export default {
   letter-spacing: -0.01em;
 }
 
-/* GitHub语言统计卡片 */
-.github-languages-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border-radius: 16px;
+/* GitHub语言统计卡片 - TUI风格 */
+.tui-github-languages-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
   padding: 1.5rem;
-  border: 1px solid #e2e8f0;
   height: fit-content;
   position: sticky;
   top: 2rem;
 }
 
-.github-languages-card h3 {
-  font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 1.5rem;
+.tui-card-header {
   text-align: center;
-  letter-spacing: -0.01em;
+  padding: 0.75rem 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #30363d;
 }
 
 .languages-pie-container {
@@ -554,7 +679,7 @@ export default {
 }
 
 .legend-item:hover {
-  background: rgba(49, 130, 206, 0.05);
+  background: rgba(88, 166, 255, 0.1);
 }
 
 .legend-color {
@@ -562,136 +687,105 @@ export default {
   height: 12px;
   border-radius: 50%;
   flex-shrink: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.3);
 }
 
 .legend-name {
   flex: 1;
-  font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #1a202c;
+  color: #c9d1d9;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
 }
 
 .legend-percent {
-  font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #718096;
+  color: #58a6ff;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
+  font-variant-numeric: tabular-nums;
 }
 
-.education-section,
-.tech-stack-section,
-.interests-section {
-  background: white;
-  border-radius: 20px;
+.tui-education-section,
+.tui-tech-stack-section,
+.tui-interests-section {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.education-section h2,
-.tech-stack-section h2,
-.interests-section h2 {
-  font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 2.5rem;
-  text-align: center;
-  letter-spacing: -0.01em;
-  position: relative;
-}
-
-.education-section h2::after,
-.tech-stack-section h2::after,
-.interests-section h2::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: -8px;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 3px;
-  background: linear-gradient(45deg, #3182ce, #2b6cb0);
-  border-radius: 2px;
-}
-
-.education-timeline {
-  position: relative;
-  padding-left: 2rem;
-}
-
-.education-timeline::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: linear-gradient(45deg, #20c997, #17a2b8);
-}
-
-.timeline-item {
-  position: relative;
   margin-bottom: 2rem;
 }
 
-.timeline-item::before {
-  content: '';
-  position: absolute;
-  left: -2.5rem;
-  top: 0.5rem;
-  width: 12px;
-  height: 12px;
-  background: #20c997;
-  border-radius: 50%;
-  border: 3px solid white;
-  box-shadow: 0 0 0 3px #20c997;
+.tui-education-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
-.timeline-year {
-  font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 1rem;
+.tui-timeline-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.tui-timeline-item:hover {
+  border-color: #58a6ff;
+  box-shadow: 0 0 15px rgba(88, 166, 255, 0.2);
+}
+
+.tui-timeline-year {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: #3182ce;
-  margin-bottom: 0.8rem;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  color: #58a6ff;
+  font-variant-numeric: tabular-nums;
 }
 
-.timeline-content h3 {
-  font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 0.8rem;
-  letter-spacing: -0.01em;
-  line-height: 1.3;
+.tui-timeline-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-left: 1rem;
 }
 
-.timeline-content p {
-  font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 1rem;
-  font-weight: 400;
-  color: #4a5568;
-  margin-bottom: 0.8rem;
-  line-height: 1.6;
-  letter-spacing: 0.01em;
+.tui-timeline-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #c9d1d9;
 }
 
-/* GitHub语言统计样式 */
+.tui-timeline-title {
+  color: #58a6ff;
+  font-weight: 600;
+}
+
+.tui-timeline-text {
+  color: #8b949e;
+}
+
+/* GitHub语言统计样式 - TUI风格 */
 .languages-loading,
 .languages-error {
   text-align: center;
   padding: 2rem 1rem;
-  color: #718096;
+  color: #8b949e;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
 }
 
 .languages-loading .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid #e2e8f0;
-  border-top: 4px solid #3182ce;
+  border: 4px solid #30363d;
+  border-top: 4px solid #58a6ff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 1rem;
@@ -703,43 +797,47 @@ export default {
 }
 
 .languages-error {
-  color: #e53e3e;
+  color: #f85149;
   font-size: 0.9rem;
 }
 
-/* 技术栈样式 */
-.tech-stack-content {
+/* 技术栈样式 - TUI风格 */
+.tui-tech-stack-content {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 1.5rem;
 }
 
-.tech-category {
-  text-align: center;
+.tui-tech-category {
   padding: 1.5rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
   transition: all 0.3s ease;
 }
 
-.tech-category:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  border-color: #cbd5e0;
+.tui-tech-category:hover {
+  border-color: #58a6ff;
+  box-shadow: 0 0 20px rgba(88, 166, 255, 0.2);
 }
 
-.tech-category h3 {
-  font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #1a202c;
+.tui-category-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   margin-bottom: 1.5rem;
-  letter-spacing: -0.01em;
-  line-height: 1.3;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #30363d;
 }
 
-.tech-icons {
+.tui-category-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #58a6ff;
+}
+
+.tui-tech-icons {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -747,83 +845,92 @@ export default {
   gap: 0.5rem;
 }
 
-.tech-icons img {
+.tui-tech-icons img {
   height: 48px;
   width: auto;
   transition: all 0.3s ease;
-  filter: grayscale(0.2) brightness(0.9);
+  filter: grayscale(0.3) brightness(0.9);
   border-radius: 8px;
   padding: 4px;
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #0d1117;
+  border: 1px solid #30363d;
 }
 
-.tech-icons img:hover {
+.tui-tech-icons img:hover {
   transform: scale(1.1) translateY(-2px);
-  filter: grayscale(0) brightness(1);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  filter: grayscale(0) brightness(1.1);
+  border-color: #58a6ff;
+  box-shadow: 0 0 15px rgba(88, 166, 255, 0.3);
 }
 
-.interests-grid {
+.tui-interests-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  width: 100%;
 }
 
-.interest-item {
-  text-align: center;
-  padding: 1.5rem;
-  background: #f8f9fa;
+.tui-interest-item {
+  padding: 1.25rem;
+  background: #161b22;
+  border: 1px solid #30363d;
   border-radius: 12px;
   transition: all 0.3s ease;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.interest-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+.tui-interest-item:hover {
+  border-color: #58a6ff;
+  box-shadow: 0 0 20px rgba(88, 166, 255, 0.2);
+  transform: translateY(-2px);
 }
 
-.interest-icon {
-  width: 40px;
-  height: 40px;
-  margin-bottom: 1rem;
-  color: #3182ce;
+.tui-interest-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: nowrap;
 }
 
-.inline-icon {
-  width: 22px;
-  height: 22px;
-  margin-right: 0.8rem;
-  color: #3182ce;
-  vertical-align: middle;
-  display: inline-block;
-  transition: all 0.3s ease;
-  filter: drop-shadow(0 2px 4px rgba(49, 130, 206, 0.1));
+.tui-interest-icon {
+  width: 20px;
+  height: 20px;
+  color: #58a6ff;
+  flex-shrink: 0;
 }
 
-.intro-text p:hover .inline-icon {
-  transform: scale(1.1);
-  color: #2b6cb0;
+.tui-interest-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #58a6ff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.interest-item h3 {
-  font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 0.8rem;
-  letter-spacing: -0.01em;
-  line-height: 1.3;
+.tui-interest-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding-left: 1.5rem;
+  flex: 1;
 }
 
-.interest-item p {
-  font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 1rem;
-  font-weight: 400;
-  color: #4a5568;
-  line-height: 1.6;
-  letter-spacing: 0.01em;
+.tui-interest-desc {
+  color: #8b949e;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
+
+/* 移除旧的样式，已替换为TUI风格 */
 
 @media (max-width: 768px) {
   .about-page {
@@ -865,22 +972,22 @@ export default {
     font-size: 1.5rem;
   }
   
-  .interests-grid {
+  .tui-interests-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
   
-  .education-section h2,
-  .tech-stack-section h2,
-  .interests-section h2 {
-    font-size: 1.6rem;
+  .tui-interest-item {
+    padding: 1rem;
   }
   
-  .tech-category h3 {
-    font-size: 1.2rem;
+  .tui-intro-card {
+    grid-template-columns: 1fr;
   }
   
-  .tech-icons img {
-    height: 40px;
+  .tui-github-languages-card {
+    position: static;
+    margin-top: 2rem;
   }
 }
 
@@ -909,34 +1016,29 @@ export default {
     font-size: 0.85rem;
   }
   
-  .education-section h2,
-  .tech-stack-section h2,
-  .interests-section h2 {
-    font-size: 1.4rem;
+  .tui-interests-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
   
-  .tech-category h3 {
-    font-size: 1.1rem;
+  .tui-interest-item {
+    padding: 0.875rem;
   }
   
-  .tech-icons img {
-    height: 36px;
+  .tui-interest-title {
+    font-size: 0.85rem;
   }
   
-  .tech-category {
+  .tui-interest-desc {
+    font-size: 0.8rem;
+  }
+  
+  .tui-tech-category {
     padding: 1rem;
   }
   
-  .timeline-content h3 {
-    font-size: 1.2rem;
-  }
-  
-  .interest-item h3 {
-    font-size: 1.1rem;
-  }
-  
-  .interests-grid {
-    grid-template-columns: 1fr;
+  .tui-timeline-title {
+    font-size: 0.9rem;
   }
 }
 </style>
