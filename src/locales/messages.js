@@ -12,6 +12,7 @@ export const messages = {
         { key: 'skills', name: '技能', href: '#skills', icon: 'CodeBracketIcon' },
         { key: 'portfolio', name: '作品展示', href: '#portfolio', icon: 'BriefcaseIcon' },
         { key: 'blog', name: '个人博客', href: '#blog', icon: 'DocumentTextIcon' },
+        { key: 'games', name: '游戏', href: '#games', icon: 'SparklesIcon' },
         { key: 'contact', name: '联系我', href: '#contact', icon: 'EnvelopeIcon' }
       ],
       tabs: [
@@ -20,6 +21,7 @@ export const messages = {
         { id: 'skills', name: '技能', icon: 'CodeBracketIcon' },
         { id: 'portfolio', name: '作品', icon: 'BriefcaseIcon' },
         { id: 'blog', name: '博客', icon: 'DocumentTextIcon' },
+        { id: 'games', name: '游戏', icon: 'SparklesIcon' },
         { id: 'contact', name: '联系', icon: 'EnvelopeIcon' }
       ],
       socialLinks: [
@@ -583,6 +585,7 @@ export const messages = {
         { key: 'skills', name: 'Skills', href: '#skills', icon: 'CodeBracketIcon' },
         { key: 'portfolio', name: 'Portfolio', href: '#portfolio', icon: 'BriefcaseIcon' },
         { key: 'blog', name: 'Blog', href: '#blog', icon: 'DocumentTextIcon' },
+        { key: 'games', name: 'Games', href: '#games', icon: 'SparklesIcon' },
         { key: 'contact', name: 'Contact', href: '#contact', icon: 'EnvelopeIcon' }
       ],
       tabs: [
@@ -591,6 +594,7 @@ export const messages = {
         { id: 'skills', name: 'Skills', icon: 'CodeBracketIcon' },
         { id: 'portfolio', name: 'Portfolio', icon: 'BriefcaseIcon' },
         { id: 'blog', name: 'Blog', icon: 'DocumentTextIcon' },
+        { id: 'games', name: 'Games', icon: 'SparklesIcon' },
         { id: 'contact', name: 'Contact', icon: 'EnvelopeIcon' }
       ],
       socialLinks: [
