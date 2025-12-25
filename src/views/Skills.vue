@@ -1,76 +1,92 @@
 <template>
   <div class="skills-page" :class="{ 'content-loading': contentLoading }">
-    <!-- 技术栈图标展示 -->
-    <div class="tech-icons-showcase">
-      <h2>{{ skillsText.techShowcaseTitle }}</h2>
-      <div class="tech-icons-grid">
+    <!-- 技术栈图标展示 - TUI风格 -->
+    <div class="tui-tech-showcase">
+      <div class="tui-section-header">
+        <span class="tui-header-decoration">┌─</span>
+        <span class="tui-section-title">{{ skillsText.techShowcaseTitle }}</span>
+        <span class="tui-header-decoration">─┐</span>
+      </div>
+      <div class="tui-tech-icons-grid">
         <div
-          class="tech-icon-row"
+          class="tui-tech-icon-row"
           v-for="(row, index) in techIconRows"
           :key="index"
         >
-          <img :src="row.src" :alt="row.alt" />
+          <div class="tui-icon-wrapper">
+            <img :src="row.src" :alt="row.alt" />
+          </div>
         </div>
+      </div>
+      <div class="tui-section-footer">
+        <span class="tui-footer-line">────────────────────────</span>
       </div>
     </div>
     
     <div class="skills-content">
-      <div class="skill-category" v-for="category in skillCategories" :key="category.name">
-        <div class="category-header">
-          <component :is="category.icon" class="category-icon" />
-          <h2>{{ category.name }}</h2>
+      <div class="tui-skill-category" v-for="(category, catIndex) in skillCategories" :key="category.name" :style="{ '--delay': catIndex * 0.1 + 's' }">
+        <div class="tui-category-header">
+          <span class="tui-header-decoration">┌─</span>
+          <component :is="category.icon" class="tui-category-icon" />
+          <span class="tui-category-title">{{ category.name }}</span>
+          <span class="tui-header-decoration">─┐</span>
         </div>
-        <div class="skill-list">
-          <div v-for="skill in category.skills" :key="skill.name" class="skill-item">
-            <div class="skill-info">
-              <span class="skill-name">{{ skill.name }}</span>
-              <span class="skill-level">{{ skill.level }}%</span>
+        <div class="tui-skill-list">
+          <div v-for="(skill, skillIndex) in category.skills" :key="skill.name" class="tui-skill-item" :style="{ '--skill-delay': skillIndex * 0.05 + 's' }">
+            <div class="tui-skill-info">
+              <span class="tui-prompt">$</span>
+              <span class="tui-skill-name">{{ skill.name }}</span>
+              <span class="tui-skill-separator">:</span>
+              <span class="tui-skill-level">{{ skill.level }}%</span>
             </div>
-            <!-- 根据技能类别使用不同的可视化方式 -->
-            <div v-if="category.key === 'programming'" class="skill-bar">
-              <div class="skill-progress" :style="{ width: skill.level + '%' }"></div>
+            <!-- 根据技能类别使用不同的可视化方式 - TUI风格 -->
+            <div v-if="category.key === 'programming'" class="tui-skill-bar">
+              <div class="tui-skill-progress" :style="{ width: skill.level + '%' }"></div>
             </div>
-            <div v-else-if="category.key === 'ai'" class="skill-line">
-              <svg class="line-chart" viewBox="0 0 100 20">
-                <polyline :points="getLinePoints(skill.level)" stroke="#38a169" stroke-width="2" fill="none"/>
-                <circle :cx="getLineX(skill.level)" cy="getLineY(skill.level)" r="2" fill="#38a169"/>
+            <div v-else-if="category.key === 'ai'" class="tui-skill-line">
+              <svg class="tui-line-chart" viewBox="0 0 100 20">
+                <polyline :points="getLinePoints(skill.level)" stroke="#58a6ff" stroke-width="2" fill="none"/>
+                <circle :cx="getLineX(skill.level)" cy="getLineY(skill.level)" r="2" fill="#58a6ff"/>
               </svg>
             </div>
-            <div v-else-if="category.key === 'containers'" class="skill-donut">
-              <div class="donut-progress" :style="{ '--progress': skill.level + '%' }">
-                <div class="donut-inner">
-                  <span class="donut-text">{{ skill.level }}%</span>
+            <div v-else-if="category.key === 'containers'" class="tui-skill-donut">
+              <div class="tui-donut-progress" :style="{ '--progress': skill.level + '%' }">
+                <div class="tui-donut-inner">
+                  <span class="tui-donut-text">{{ skill.level }}%</span>
                 </div>
               </div>
             </div>
-            <div v-else-if="category.key === 'database'" class="skill-blocks">
-              <div class="block-container">
+            <div v-else-if="category.key === 'database'" class="tui-skill-blocks">
+              <div class="tui-block-container">
                 <div v-for="i in 10" :key="i" 
-                     class="skill-block" 
+                     class="tui-skill-block" 
                      :class="{ 'active': i <= Math.ceil(skill.level / 10) }">
                 </div>
               </div>
             </div>
-            <div v-else-if="category.key === 'tools'" class="skill-dots">
-              <div class="dot-container">
+            <div v-else-if="category.key === 'tools'" class="tui-skill-dots">
+              <div class="tui-dot-container">
                 <div v-for="i in 10" :key="i" 
-                     class="skill-dot" 
+                     class="tui-skill-dot" 
                      :class="{ 'active': i <= Math.ceil(skill.level / 10) }">
                 </div>
               </div>
             </div>
-            <div v-else-if="category.key === 'os'" class="skill-steps">
-              <div class="step-container">
+            <div v-else-if="category.key === 'os'" class="tui-skill-steps">
+              <div class="tui-step-container">
                 <div v-for="i in 5" :key="i" 
-                     class="skill-step" 
+                     class="tui-skill-step" 
                      :class="{ 'active': i <= Math.ceil(skill.level / 20) }">
                 </div>
               </div>
             </div>
-            <div v-else class="skill-bar">
-              <div class="skill-progress" :style="{ width: skill.level + '%' }"></div>
+            <div v-else class="tui-skill-bar">
+              <div class="tui-skill-progress" :style="{ width: skill.level + '%' }"></div>
             </div>
           </div>
+        </div>
+        <div class="tui-category-footer">
+          <span class="tui-footer-line">────────────────────</span>
         </div>
       </div>
     </div>
@@ -151,84 +167,140 @@ export default {
   max-width: 1200px;
   margin: 0 auto;
   transition: opacity 0.4s ease;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
 }
 
 .skills-page.content-loading {
   opacity: 0.6;
 }
 
-/* 技术栈图标展示 */
-.tech-icons-showcase {
-  background: white;
-  border-radius: 20px;
-  padding: 2rem;
-  margin-bottom: 3rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+/* TUI 通用样式 */
+.tui-header-decoration {
+  color: #58a6ff;
+  font-size: 0.9rem;
+  font-weight: 400;
+  opacity: 0.6;
+  margin: 0 0.5rem;
+}
+
+.tui-section-title,
+.tui-category-title {
+  color: #58a6ff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 
+    0 0 10px rgba(88, 166, 255, 0.5),
+    0 0 20px rgba(88, 166, 255, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, #58a6ff 0%, #79c0ff 50%, #58a6ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% 100%;
+  animation: title-shimmer 3s ease-in-out infinite;
+}
+
+@keyframes title-shimmer {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.tui-section-header,
+.tui-category-header {
+  text-align: center;
+  padding: 1rem 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #30363d;
+}
+
+.tui-section-footer,
+.tui-category-footer {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #30363d;
   text-align: center;
 }
 
-.tech-icons-showcase h2 {
-  font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 2rem;
-  letter-spacing: -0.01em;
-  position: relative;
+.tui-footer-line {
+  color: #30363d;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
 }
 
-.tech-icons-showcase h2::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: -8px;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 3px;
-  background: linear-gradient(45deg, #3182ce, #2b6cb0);
-  border-radius: 2px;
+/* 技术栈图标展示 - TUI风格 */
+.tui-tech-showcase {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 3rem;
+  transition: all 0.3s ease;
 }
 
-.tech-icons-grid {
+.tui-tech-showcase:hover {
+  border-color: #58a6ff;
+  box-shadow: 0 0 20px rgba(88, 166, 255, 0.2);
+}
+
+.tui-tech-icons-grid {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
-.tech-icon-row {
+.tui-tech-icon-row {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.75rem;
   padding: 1rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
   transition: all 0.3s ease;
 }
 
-.tech-icon-row:hover {
+.tui-tech-icon-row:hover {
+  border-color: #58a6ff;
+  box-shadow: 0 0 15px rgba(88, 166, 255, 0.2);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  border-color: #cbd5e0;
 }
 
-.tech-icon-row img {
-  height: 48px;
+.tui-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.tui-tech-icon-row:hover .tui-icon-wrapper {
+  border-color: #58a6ff;
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
+}
+
+.tui-icon-wrapper img {
+  height: 40px;
   width: auto;
   transition: all 0.3s ease;
-  filter: grayscale(0.2) brightness(0.9);
-  border-radius: 8px;
+  filter: grayscale(0.3) brightness(0.9);
+  border-radius: 4px;
   padding: 4px;
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.tech-icon-row img:hover {
-  transform: scale(1.1) translateY(-2px);
-  filter: grayscale(0) brightness(1);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+.tui-icon-wrapper:hover img {
+  transform: scale(1.1);
+  filter: grayscale(0) brightness(1.1);
 }
 
 .page-header {
@@ -254,172 +326,196 @@ export default {
   gap: 2rem;
 }
 
-.skill-category {
-  background: white;
-  border-radius: 20px;
-  padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+/* 技能分类卡片 - TUI风格 */
+.tui-skill-category {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 1.5rem;
   transition: all 0.3s ease;
+  animation: fadeInUp 0.6s ease-out var(--delay, 0s) both;
 }
 
-.skill-category:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+.tui-skill-category:hover {
+  border-color: #58a6ff;
+  box-shadow: 0 0 20px rgba(88, 166, 255, 0.2);
+  transform: translateY(-2px);
 }
 
-.category-header {
+.tui-category-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid #f8f9fa;
+  border-bottom: 1px solid #30363d;
 }
 
-.category-icon {
-  width: 32px;
-  height: 32px;
-  color: #3182ce;
+.tui-category-icon {
+  width: 24px;
+  height: 24px;
+  color: #79c0ff;
+  flex-shrink: 0;
 }
 
-.category-header h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin: 0;
-}
-
-.skill-list {
+.tui-skill-list {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
-.skill-item {
+.tui-skill-item {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  animation: fadeInUp 0.4s ease-out var(--skill-delay, 0s) both;
 }
 
-.skill-info {
+.tui-skill-info {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-}
-
-.skill-name {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #495057;
-}
-
-.skill-level {
+  gap: 0.5rem;
   font-size: 0.9rem;
-  color: #6c757d;
-  font-weight: 600;
+  line-height: 1.6;
 }
 
-.skill-bar {
-  height: 8px;
-  background: #e9ecef;
+.tui-prompt {
+  color: #58a6ff;
+  font-weight: 600;
+  margin-right: 0.25rem;
+}
+
+.tui-skill-name {
+  color: #c9d1d9;
+  font-weight: 500;
+}
+
+.tui-skill-separator {
+  color: #8b949e;
+  margin: 0 0.25rem;
+}
+
+.tui-skill-level {
+  color: #58a6ff;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+}
+
+/* TUI 技能进度条 */
+.tui-skill-bar {
+  height: 10px;
+  background: #21262d;
+  border: 1px solid #30363d;
   border-radius: 4px;
   overflow: hidden;
   position: relative;
 }
 
-.skill-progress {
+.tui-skill-progress {
   height: 100%;
-  background: linear-gradient(45deg, #20c997, #17a2b8);
+  background: linear-gradient(90deg, #58a6ff 0%, #79c0ff 100%);
   border-radius: 4px;
   transition: width 1.5s ease;
   position: relative;
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
 }
 
-.skill-progress::after {
+.tui-skill-progress::after {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   animation: shimmer 2s infinite;
 }
 
-/* 折线图样式 */
-.skill-line {
-  height: 8px;
+/* TUI 折线图样式 */
+.tui-skill-line {
+  height: 10px;
   width: 100%;
   display: flex;
   align-items: center;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  padding: 4px;
 }
 
-.line-chart {
+.tui-line-chart {
   width: 100%;
   height: 20px;
 }
 
-/* 方块图样式 */
-.skill-blocks {
-  height: 8px;
+/* TUI 方块图样式 */
+.tui-skill-blocks {
+  height: 10px;
   width: 100%;
   display: flex;
   align-items: center;
 }
 
-.block-container {
+.tui-block-container {
   display: flex;
-  gap: 2px;
+  gap: 3px;
   width: 100%;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  padding: 2px;
 }
 
-.skill-block {
+.tui-skill-block {
   flex: 1;
-  height: 8px;
-  background: #e9ecef;
+  height: 6px;
+  background: #30363d;
   border-radius: 2px;
   transition: all 0.3s ease;
 }
 
-.skill-block.active {
-  background: linear-gradient(45deg, #d69e2e, #b7791f);
-  box-shadow: 0 0 8px rgba(214, 158, 46, 0.3);
+.tui-skill-block.active {
+  background: linear-gradient(90deg, #58a6ff 0%, #79c0ff 100%);
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.5);
 }
 
-/* 圆盘图（甜甜圈图）样式 */
-.skill-donut {
-  height: 8px;
+/* TUI 圆盘图样式 */
+.tui-skill-donut {
+  height: 10px;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.donut-progress {
-  width: 40px;
-  height: 40px;
+.tui-donut-progress {
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  background: conic-gradient(#d69e2e var(--progress, 0%), #e9ecef 0);
+  background: conic-gradient(#58a6ff var(--progress, 0%), #21262d 0);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   animation: donut-rotate 2s ease-in-out;
+  border: 2px solid #30363d;
 }
 
-.donut-progress::before {
+.tui-donut-progress::before {
   content: '';
   position: absolute;
-  width: 24px;
-  height: 24px;
-  background: white;
+  width: 32px;
+  height: 32px;
+  background: #0d1117;
   border-radius: 50%;
 }
 
-.donut-inner {
-  width: 24px;
-  height: 24px;
-  background: white;
+.tui-donut-inner {
+  width: 32px;
+  height: 32px;
+  background: #0d1117;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -427,10 +523,11 @@ export default {
   z-index: 1;
 }
 
-.donut-text {
-  font-size: 7px;
+.tui-donut-text {
+  font-size: 8px;
   font-weight: 600;
-  color: #d69e2e;
+  color: #58a6ff;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
 }
 
 @keyframes donut-rotate {
@@ -442,70 +539,78 @@ export default {
   }
 }
 
-/* 点状图样式 */
-.skill-dots {
-  height: 8px;
+/* TUI 点状图样式 */
+.tui-skill-dots {
+  height: 10px;
   width: 100%;
   display: flex;
   align-items: center;
 }
 
-.dot-container {
+.tui-dot-container {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   width: 100%;
   justify-content: space-between;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  padding: 4px 8px;
 }
 
-.skill-dot {
+.tui-skill-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #e9ecef;
+  background: #30363d;
   transition: all 0.3s ease;
 }
 
-.skill-dot.active {
-  background: linear-gradient(45deg, #805ad5, #6b46c1);
-  box-shadow: 0 0 6px rgba(128, 90, 213, 0.4);
-  transform: scale(1.2);
+.tui-skill-dot.active {
+  background: #58a6ff;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.6);
+  transform: scale(1.3);
 }
 
-/* 阶梯图样式 */
-.skill-steps {
-  height: 8px;
+/* TUI 阶梯图样式 */
+.tui-skill-steps {
+  height: 10px;
   width: 100%;
   display: flex;
   align-items: center;
 }
 
-.step-container {
+.tui-step-container {
   display: flex;
-  gap: 1px;
+  gap: 2px;
   width: 100%;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  padding: 2px;
 }
 
-.skill-step {
+.tui-skill-step {
   flex: 1;
-  height: 8px;
-  background: #e9ecef;
+  height: 6px;
+  background: #30363d;
   transition: all 0.3s ease;
   position: relative;
 }
 
-.skill-step.active {
-  background: linear-gradient(45deg, #dd6b20, #c05621);
-  box-shadow: 0 0 8px rgba(221, 107, 32, 0.3);
+.tui-skill-step.active {
+  background: linear-gradient(90deg, #58a6ff 0%, #79c0ff 100%);
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.5);
 }
 
-.skill-step.active::after {
+.tui-skill-step.active::after {
   content: '';
   position: absolute;
   top: -2px;
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(45deg, #dd6b20, #c05621);
+  background: #58a6ff;
   border-radius: 1px;
 }
 
@@ -518,39 +623,61 @@ export default {
   }
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 768px) {
   .skills-page {
     padding: 1rem;
   }
   
-  .tech-icons-showcase h2 {
-    font-size: 1.6rem;
+  .tui-section-title,
+  .tui-category-title {
+    font-size: 1rem;
   }
   
-  .tech-icon-row img {
-    height: 40px;
+  .tui-icon-wrapper img {
+    height: 36px;
   }
   
   .skills-content {
     grid-template-columns: 1fr;
   }
   
-  .skill-category {
-    padding: 1.5rem;
+  .tui-skill-category {
+    padding: 1.25rem;
   }
 }
 
 @media (max-width: 480px) {
-  .tech-icons-showcase h2 {
-    font-size: 1.4rem;
+  .tui-section-title,
+  .tui-category-title {
+    font-size: 0.9rem;
   }
   
-  .tech-icon-row img {
-    height: 36px;
+  .tui-icon-wrapper img {
+    height: 32px;
   }
   
-  .tech-icon-row {
-    padding: 0.8rem;
+  .tui-tech-icon-row {
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+  
+  .tui-skill-category {
+    padding: 1rem;
+  }
+  
+  .tui-skill-info {
+    font-size: 0.85rem;
   }
 }
 </style>

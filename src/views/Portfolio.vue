@@ -1,73 +1,90 @@
 <template>
-  <div class="portfolio" :class="{ 'content-loading': contentLoading }">
-    <section id="portfolio" class="portfolio-section">
-      <div class="container">
-        <!-- 项目分类筛选 -->
-        <div class="portfolio-filters">
-          <el-button 
+  <div class="tui-portfolio" :class="{ 'content-loading': contentLoading }">
+    <section id="portfolio" class="tui-portfolio-section">
+      <div class="tui-container">
+        <!-- 项目分类筛选 - TUI风格 -->
+        <div class="tui-section-header">
+          <span class="tui-header-decoration">┌─</span>
+          <span class="tui-section-title">PORTFOLIO</span>
+          <span class="tui-header-decoration">─┐</span>
+        </div>
+        <div class="tui-portfolio-filters">
+          <button 
             v-for="filter in filters" 
             :key="filter.key"
-            :type="activeFilter === filter.key ? 'primary' : ''"
             @click="setActiveFilter(filter.key)"
-            class="filter-btn"
+            class="tui-filter-btn"
+            :class="{ active: activeFilter === filter.key }"
           >
-            {{ filter.label }}
-          </el-button>
+            <span class="tui-prompt" v-if="activeFilter === filter.key">▶</span>
+            <span class="tui-prompt" v-else>·</span>
+            <span>{{ filter.label }}</span>
+          </button>
         </div>
         
-        <!-- 项目网格 -->
-        <div class="portfolio-grid">
+        <!-- 项目网格 - TUI风格 -->
+        <div class="tui-portfolio-grid">
           <div 
             v-for="project in filteredProjects" 
             :key="project.id"
-            class="project-card"
+            class="tui-project-card"
             @click="openProjectModal(project)"
           >
-            <div class="project-image" :style="{ background: project.gradient }">
-              <div class="project-icon-container">
-                <component :is="project.icon" class="project-icon" />
-              </div>
-              <div class="project-overlay">
-                <div class="overlay-content">
-                  <EyeIcon class="view-icon" />
-                  <span>{{ portfolioText.overlayLabel }}</span>
-                </div>
+            <div class="tui-project-header">
+              <span class="tui-header-decoration">┌─</span>
+              <span class="tui-project-category">{{ project.category }}</span>
+              <span class="tui-header-decoration">─┐</span>
+            </div>
+            <div class="tui-project-image" :style="{ background: project.gradient }">
+              <div class="tui-project-icon-container">
+                <component :is="project.icon" class="tui-project-icon" />
               </div>
             </div>
             
-            <div class="project-content">
-              <div class="project-category">{{ project.category }}</div>
-              <h3 class="project-title">{{ project.title }}</h3>
-              <p class="project-description">{{ project.description }}</p>
-              
-              <div class="project-tech">
-                <span 
-                  v-for="tech in project.technologies" 
-                  :key="tech"
-                  class="tech-tag"
-                >
-                  {{ tech }}
-                </span>
+            <div class="tui-project-content">
+              <div class="tui-project-title-line">
+                <span class="tui-prompt">$</span>
+                <span class="tui-project-title">{{ project.title }}</span>
+              </div>
+              <div class="tui-project-desc-line">
+                <span class="tui-prompt">·</span>
+                <span class="tui-project-description">{{ project.description }}</span>
               </div>
               
-              <div class="project-links">
+              <div class="tui-project-tech">
+                <div class="tui-tech-line">
+                  <span class="tui-prompt">→</span>
+                  <span class="tui-tech-label">TECH:</span>
+                  <span 
+                    v-for="(tech, index) in project.technologies" 
+                    :key="tech"
+                    class="tui-tech-tag"
+                  >
+                    {{ tech }}<span v-if="index < project.technologies.length - 1">,</span>
+                  </span>
+                </div>
+              </div>
+              
+              <div class="tui-project-links">
                 <a 
                   :href="project.demoUrl" 
                   target="_blank" 
-                  class="project-link"
+                  class="tui-project-link"
                   @click.stop
                 >
-                  <LinkIcon class="link-icon" />
-                  {{ portfolioText.demoLabel }}
+                  <span class="tui-prompt">→</span>
+                  <LinkIcon class="tui-link-icon" />
+                  <span>{{ portfolioText.demoLabel }}</span>
                 </a>
                 <a 
                   :href="project.githubUrl" 
                   target="_blank" 
-                  class="project-link"
+                  class="tui-project-link"
                   @click.stop
                 >
-                  <CodeBracketIcon class="link-icon" />
-                  {{ portfolioText.codeLabel }}
+                  <span class="tui-prompt">→</span>
+                  <CodeBracketIcon class="tui-link-icon" />
+                  <span>{{ portfolioText.codeLabel }}</span>
                 </a>
               </div>
             </div>
@@ -76,79 +93,108 @@
       </div>
     </section>
     
-    <!-- 项目详情模态框 -->
+    <!-- 项目详情模态框 - TUI风格 -->
     <el-dialog
       v-model="showModal"
       :title="selectedProject?.title"
       width="80%"
-      class="project-modal"
+      class="tui-project-modal"
     >
-      <div v-if="selectedProject" class="modal-content">
-        <div class="modal-image" :style="{ background: selectedProject.gradient }">
-          <div class="modal-icon-container">
-            <component :is="selectedProject.icon" class="modal-icon" />
+      <div v-if="selectedProject" class="tui-modal-content">
+        <div class="tui-modal-header">
+          <span class="tui-header-decoration">┌─</span>
+          <span class="tui-modal-title">{{ selectedProject.title }}</span>
+          <span class="tui-header-decoration">─┐</span>
+        </div>
+        <div class="tui-modal-image" :style="{ background: selectedProject.gradient }">
+          <div class="tui-modal-icon-container">
+            <component :is="selectedProject.icon" class="tui-modal-icon" />
           </div>
         </div>
         
-        <div class="modal-details">
-          <div class="project-meta">
-            <div class="meta-item">
-              <CalendarIcon class="meta-icon" />
-              <span>{{ selectedProject.date }}</span>
+        <div class="tui-modal-details">
+          <div class="tui-project-meta">
+            <div class="tui-meta-line">
+              <span class="tui-prompt">→</span>
+              <CalendarIcon class="tui-meta-icon" />
+              <span class="tui-meta-label">DATE:</span>
+              <span class="tui-meta-value">{{ selectedProject.date }}</span>
             </div>
-            <div class="meta-item">
-              <UserIcon class="meta-icon" />
-              <span>{{ selectedProject.role }}</span>
+            <div class="tui-meta-line">
+              <span class="tui-prompt">→</span>
+              <UserIcon class="tui-meta-icon" />
+              <span class="tui-meta-label">ROLE:</span>
+              <span class="tui-meta-value">{{ selectedProject.role }}</span>
             </div>
-            <div class="meta-item">
-              <TagIcon class="meta-icon" />
-              <span>{{ selectedProject.category }}</span>
+            <div class="tui-meta-line">
+              <span class="tui-prompt">→</span>
+              <TagIcon class="tui-meta-icon" />
+              <span class="tui-meta-label">CATEGORY:</span>
+              <span class="tui-meta-value">{{ selectedProject.category }}</span>
             </div>
           </div>
           
-          <div class="project-description-full">
-            <h4>{{ portfolioText.modal.descriptionTitle }}</h4>
-            <p>{{ selectedProject.fullDescription }}</p>
+          <div class="tui-project-description-full">
+            <div class="tui-section-header">
+              <span class="tui-header-decoration">┌─</span>
+              <span class="tui-section-title">{{ portfolioText.modal.descriptionTitle }}</span>
+              <span class="tui-header-decoration">─┐</span>
+            </div>
+            <div class="tui-desc-line">
+              <span class="tui-prompt">·</span>
+              <p>{{ selectedProject.fullDescription }}</p>
+            </div>
           </div>
           
-          <div class="project-features">
-            <h4>{{ portfolioText.modal.featuresTitle }}</h4>
-            <ul>
-              <li v-for="feature in selectedProject.features" :key="feature">
-                {{ feature }}
+          <div class="tui-project-features">
+            <div class="tui-section-header">
+              <span class="tui-header-decoration">┌─</span>
+              <span class="tui-section-title">{{ portfolioText.modal.featuresTitle }}</span>
+              <span class="tui-header-decoration">─┐</span>
+            </div>
+            <ul class="tui-features-list">
+              <li v-for="feature in selectedProject.features" :key="feature" class="tui-feature-item">
+                <span class="tui-prompt">→</span>
+                <span>{{ feature }}</span>
               </li>
             </ul>
           </div>
           
-          <div class="project-technologies">
-            <h4>{{ portfolioText.modal.techTitle }}</h4>
-            <div class="tech-list">
+          <div class="tui-project-technologies">
+            <div class="tui-section-header">
+              <span class="tui-header-decoration">┌─</span>
+              <span class="tui-section-title">{{ portfolioText.modal.techTitle }}</span>
+              <span class="tui-header-decoration">─┐</span>
+            </div>
+            <div class="tui-tech-list">
               <span 
                 v-for="tech in selectedProject.technologies" 
                 :key="tech"
-                class="tech-tag large"
+                class="tui-tech-tag-large"
               >
                 {{ tech }}
               </span>
             </div>
           </div>
           
-          <div class="project-links-full">
+          <div class="tui-project-links-full">
             <a 
               :href="selectedProject.demoUrl" 
               target="_blank" 
-              class="btn-primary"
+              class="tui-btn-primary"
             >
-              <LinkIcon class="btn-icon" />
-              {{ portfolioText.modal.demoButton }}
+              <span class="tui-prompt">→</span>
+              <LinkIcon class="tui-btn-icon" />
+              <span>{{ portfolioText.modal.demoButton }}</span>
             </a>
             <a 
               :href="selectedProject.githubUrl" 
               target="_blank" 
-              class="btn-outline"
+              class="tui-btn-outline"
             >
-              <CodeBracketIcon class="btn-icon" />
-              {{ portfolioText.modal.codeButton }}
+              <span class="tui-prompt">→</span>
+              <CodeBracketIcon class="tui-btn-icon" />
+              <span>{{ portfolioText.modal.codeButton }}</span>
             </a>
           </div>
         </div>
@@ -240,13 +286,74 @@ export default {
 </script>
 
 <style scoped>
-.portfolio-section {
-  padding: 120px 0 80px;
-  background: white;
+.tui-portfolio {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
+  color: #c9d1d9;
 }
 
-.portfolio.content-loading {
+.tui-portfolio.content-loading {
   opacity: 0.6;
+}
+
+.tui-portfolio-section {
+  padding: 2rem 0;
+}
+
+.tui-container {
+  max-width: 100%;
+}
+
+/* TUI 通用样式 */
+.tui-header-decoration {
+  color: #58a6ff;
+  font-size: 0.9rem;
+  font-weight: 400;
+  opacity: 0.6;
+  margin: 0 0.5rem;
+}
+
+.tui-section-title {
+  color: #58a6ff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 
+    0 0 10px rgba(88, 166, 255, 0.5),
+    0 0 20px rgba(88, 166, 255, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, #58a6ff 0%, #79c0ff 50%, #58a6ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% 100%;
+  animation: title-shimmer 3s ease-in-out infinite;
+}
+
+@keyframes title-shimmer {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.tui-section-header {
+  text-align: center;
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #30363d;
+}
+
+.tui-prompt {
+  color: #58a6ff;
+  font-weight: 600;
+  margin-right: 0.5rem;
+  font-size: 0.85rem;
 }
 
 .section-header {
@@ -260,52 +367,95 @@ export default {
   margin-top: 1rem;
 }
 
-.portfolio-filters {
+.tui-portfolio-filters {
   display: flex;
   justify-content: center;
-  gap: 1rem;
-  margin-bottom: 3rem;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
   flex-wrap: wrap;
 }
 
-.filter-btn {
-  border-radius: 25px;
-  padding: 8px 20px;
+.tui-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  color: #8b949e;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
+  font-size: 0.9rem;
   font-weight: 500;
+  cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.portfolio-grid {
+.tui-filter-btn:hover {
+  border-color: #58a6ff;
+  background: #21262d;
+  color: #c9d1d9;
+}
+
+.tui-filter-btn.active {
+  background: #0d1117;
+  border-color: #58a6ff;
+  color: #58a6ff;
+  box-shadow: 0 0 15px rgba(88, 166, 255, 0.2);
+}
+
+.tui-portfolio-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
-.project-card {
-  background: white;
-  border-radius: 15px;
+.tui-project-card {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: var(--box-shadow-light);
   transition: all 0.3s ease;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
 }
 
-.project-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+.tui-project-card:hover {
+  border-color: #58a6ff;
+  box-shadow: 0 0 20px rgba(88, 166, 255, 0.2);
+  transform: translateY(-4px);
 }
 
-.project-image {
+.tui-project-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+}
+
+.tui-project-category {
+  color: #58a6ff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.tui-project-image {
   position: relative;
-  height: 200px;
+  height: 180px;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+  border-bottom: 1px solid #30363d;
 }
 
-.project-icon-container {
+.tui-project-icon-container {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -313,97 +463,110 @@ export default {
   height: 100%;
 }
 
-.project-icon {
-  width: 80px;
-  height: 80px;
-  color: white;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+.tui-project-icon {
+  width: 64px;
+  height: 64px;
+  color: #58a6ff;
+  filter: drop-shadow(0 0 20px rgba(88, 166, 255, 0.4));
   transition: all 0.3s ease;
 }
 
-.project-card:hover .project-icon {
-  transform: scale(1.1) rotate(5deg);
+.tui-project-card:hover .tui-project-icon {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 30px rgba(88, 166, 255, 0.6));
 }
 
-.project-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.project-card:hover .project-overlay {
-  opacity: 1;
-}
-
-.overlay-content {
-  text-align: center;
-  color: white;
+.tui-project-content {
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tui-project-title-line {
+  display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.overlay-content span {
-  font-weight: 500;
-}
-
-.view-icon {
-  width: 32px;
-  height: 32px;
-}
-
-.project-content {
-  padding: 1.5rem;
-}
-
-.project-category {
-  color: var(--primary-color);
-  font-size: 0.9rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-}
-
-.project-title {
-  font-size: 1.3rem;
+.tui-project-title {
+  font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 0.8rem;
-  color: var(--text-primary);
+  color: #58a6ff;
 }
 
-.project-description {
-  color: var(--text-regular);
-  line-height: 1.6;
-  margin-bottom: 1rem;
-}
-
-.project-tech {
+.tui-project-desc-line {
   display: flex;
-  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  padding-left: 1rem;
 }
 
-.tech-tag {
-  background: var(--border-lighter);
-  color: var(--text-regular);
-  padding: 0.3rem 0.8rem;
-  border-radius: 15px;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-.tech-tag.large {
+.tui-project-description {
+  color: #8b949e;
   font-size: 0.9rem;
-  padding: 0.5rem 1rem;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.tui-project-tech {
+  padding: 0.75rem;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+
+.tui-tech-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.tui-tech-label {
+  color: #8b949e;
+  font-weight: 600;
+}
+
+.tui-tech-tag {
+  color: #58a6ff;
+}
+
+.tui-project-links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #30363d;
+}
+
+.tui-project-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #8b949e;
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  background: #161b22;
+  transition: all 0.3s ease;
+}
+
+.tui-project-link:hover {
+  color: #58a6ff;
+  border-color: #58a6ff;
+  background: #21262d;
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.2);
+}
+
+.tui-link-icon {
+  width: 16px;
+  height: 16px;
+  color: inherit;
 }
 
 .project-links {
@@ -435,21 +598,70 @@ export default {
   height: 16px;
 }
 
-.modal-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+/* 模态框样式 - TUI风格 */
+:deep(.tui-project-modal) {
+  background: #0d1117;
+  border: 1px solid #30363d;
 }
 
-.modal-image {
+:deep(.tui-project-modal .el-dialog) {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+}
+
+:deep(.tui-project-modal .el-dialog__header) {
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  padding: 1rem 1.5rem;
+}
+
+:deep(.tui-project-modal .el-dialog__title) {
+  color: #58a6ff;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
+  font-weight: 600;
+}
+
+:deep(.tui-project-modal .el-dialog__body) {
+  background: #0d1117;
+  color: #c9d1d9;
+  padding: 1.5rem;
+}
+
+.tui-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tui-modal-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
-  min-height: 300px;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #30363d;
+  margin-bottom: 1.5rem;
 }
 
-.modal-icon-container {
+.tui-modal-title {
+  color: #58a6ff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.tui-modal-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  min-height: 250px;
+  background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+  border: 1px solid #30363d;
+  margin-bottom: 1.5rem;
+}
+
+.tui-modal-icon-container {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -457,91 +669,181 @@ export default {
   height: 100%;
 }
 
-.modal-icon {
-  width: 120px;
-  height: 120px;
-  color: white;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+.tui-modal-icon {
+  width: 100px;
+  height: 100px;
+  color: #58a6ff;
+  filter: drop-shadow(0 0 30px rgba(88, 166, 255, 0.5));
 }
 
-.modal-details h4 {
-  color: var(--text-primary);
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-}
-
-.project-meta {
+.tui-modal-details {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
-  margin-bottom: 2rem;
+  gap: 1.5rem;
+}
+
+.tui-project-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   padding: 1rem;
-  background: var(--bg-color-page);
+  background: #161b22;
+  border: 1px solid #30363d;
   border-radius: 8px;
 }
 
-.meta-item {
+.tui-meta-line {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--text-regular);
+  font-size: 0.9rem;
 }
 
-.meta-icon {
-  width: 20px;
-  height: 20px;
-  color: var(--primary-color);
+.tui-meta-icon {
+  width: 18px;
+  height: 18px;
+  color: #58a6ff;
   flex-shrink: 0;
 }
 
-.project-description-full p {
-  line-height: 1.6;
-  color: var(--text-regular);
-  margin-bottom: 1.5rem;
+.tui-meta-label {
+  color: #8b949e;
+  font-weight: 600;
 }
 
-.project-features ul {
+.tui-meta-value {
+  color: #c9d1d9;
+}
+
+.tui-project-description-full {
+  padding: 1rem;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+}
+
+.tui-desc-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding-left: 1rem;
+  margin-top: 1rem;
+}
+
+.tui-desc-line p {
+  line-height: 1.6;
+  color: #c9d1d9;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.tui-project-features {
+  padding: 1rem;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+}
+
+.tui-features-list {
   list-style: none;
   padding: 0;
+  margin: 1rem 0 0 0;
 }
 
-.project-features li {
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--border-lighter);
-  position: relative;
-  padding-left: 1.5rem;
-}
-
-.project-features li::before {
-  content: '✓';
-  position: absolute;
-  left: 0;
-  color: var(--success-color);
-  font-weight: bold;
-}
-
-.tech-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.project-links-full {
-  display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
-.project-links-full .btn-primary,
-.project-links-full .btn-outline {
+.tui-feature-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  padding: 0.5rem 0;
+  padding-left: 1rem;
+  color: #c9d1d9;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #30363d;
 }
 
-.btn-icon {
+.tui-feature-item:last-child {
+  border-bottom: none;
+}
+
+.tui-project-technologies {
+  padding: 1rem;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+}
+
+.tui-tech-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.tui-tech-tag-large {
+  padding: 0.4rem 0.8rem;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #58a6ff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.tui-tech-tag-large:hover {
+  border-color: #58a6ff;
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
+}
+
+.tui-project-links-full {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #30363d;
+}
+
+.tui-btn-primary,
+.tui-btn-outline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.tui-btn-primary {
+  background: #161b22;
+  border: 1px solid #58a6ff;
+  color: #58a6ff;
+}
+
+.tui-btn-primary:hover {
+  background: #21262d;
+  box-shadow: 0 0 20px rgba(88, 166, 255, 0.3);
+}
+
+.tui-btn-outline {
+  background: #161b22;
+  border: 1px solid #30363d;
+  color: #8b949e;
+}
+
+.tui-btn-outline:hover {
+  border-color: #58a6ff;
+  color: #58a6ff;
+  box-shadow: 0 0 15px rgba(88, 166, 255, 0.2);
+}
+
+.tui-btn-icon {
   width: 18px;
   height: 18px;
+  color: inherit;
 }
 
 @media (max-width: 768px) {
@@ -559,12 +861,21 @@ export default {
     white-space: nowrap;
   }
   
-  .modal-content {
-    grid-template-columns: 1fr;
+  .tui-modal-content {
+    gap: 1rem;
   }
   
-  .project-links-full {
+  .tui-project-links-full {
     flex-direction: column;
+  }
+  
+  .tui-modal-image {
+    min-height: 200px;
+  }
+  
+  .tui-modal-icon {
+    width: 80px;
+    height: 80px;
   }
 }
 </style>
