@@ -1,27 +1,34 @@
 <template>
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-links">
-          <div
-            class="link-group"
-            v-for="group in footerText.linkGroups"
-            :key="group.title"
-          >
-            <h4>{{ group.title }}</h4>
+  <footer class="tui-footer">
+    <div class="tui-footer-container">
+      <div class="tui-footer-links">
+        <div
+          class="tui-link-group"
+          v-for="group in footerText.linkGroups"
+          :key="group.title"
+        >
+          <h3 class="tui-group-title">{{ group.title }}</h3>
+          <div class="tui-link-items">
             <a
               v-for="link in group.links"
               :key="link.label + link.href"
               :href="link.href"
+              class="tui-footer-link"
             >
-              {{ link.label }}
+              <span class="tui-prompt">→</span>
+              <span class="tui-link-text">{{ link.label }}</span>
             </a>
           </div>
         </div>
       </div>
       
-      <div class="footer-bottom">
-        <p v-for="(line, index) in footerText.bottom" :key="index">{{ line }}</p>
+      <div class="tui-footer-bottom">
+        <div class="tui-footer-text">
+          <p v-for="(line, index) in footerText.bottom" :key="index" class="tui-footer-line">
+            <span class="tui-prompt">$</span>
+            <span class="tui-footer-content-text">{{ line }}</span>
+          </p>
+        </div>
       </div>
     </div>
   </footer>
@@ -42,78 +49,139 @@ export default {
 </script>
 
 <style scoped>
-.footer {
-  background: linear-gradient(135deg, #1a202c 0%, #2d3748 50%, #1a202c 100%);
-  color: #e2e8f0;
+.tui-footer {
+  background: #0d1117;
+  color: #c9d1d9;
   margin-top: auto;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  border-top: 1px solid #30363d;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
 }
 
-.footer-content {
+.tui-footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.tui-footer-links {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 3rem;
-  padding: 3rem 0;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  padding-bottom: 2rem;
 }
 
-
-.footer-links {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 3rem;
-  align-items: start;
-}
-
-.link-group {
+.tui-link-group {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  gap: 1rem;
 }
 
-.link-group h4 {
-  font-size: 1.1rem;
+.tui-group-title {
+  color: #58a6ff;
+  font-size: 0.9rem;
   font-weight: 600;
-  margin-bottom: 1rem;
-  margin-top: 0;
-  color: #f7fafc;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #30363d;
 }
 
-.link-group a {
-  display: block;
-  color: #cbd5e0;
+.tui-link-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tui-footer-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #8b949e;
   text-decoration: none;
-  margin-bottom: 0.5rem;
-  transition: all 0.3s ease;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
   padding: 0.25rem 0;
 }
 
-.link-group a:hover {
-  color: #3182ce;
-  transform: translateX(4px);
+.tui-footer-link:hover {
+  color: #58a6ff;
 }
 
-.footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 2rem 0;
+.tui-prompt {
+  color: #58a6ff;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+.tui-link-text {
+  color: inherit;
+  transition: color 0.2s ease;
+}
+
+.tui-footer-bottom {
+  padding-top: 2rem;
+  border-top: 1px solid #30363d;
   text-align: center;
-  color: #a0aec0;
-  background: rgba(0, 0, 0, 0.2);
+  color: #8b949e;
 }
 
-.footer-bottom p {
-  margin: 0.5rem 0;
+.tui-footer-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.tui-footer-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  margin: 0;
+  color: #8b949e;
+}
+
+.tui-footer-content-text {
+  color: #8b949e;
 }
 
 @media (max-width: 768px) {
-  .footer-content {
-    grid-template-columns: 1fr;
-    gap: 2rem;
+  .tui-footer-container {
+    padding: 1.5rem;
   }
   
-  .footer-links {
-    grid-template-columns: 1fr;
+  .tui-footer-links {
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+  
+  .tui-footer-bottom {
+    padding-top: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tui-footer-container {
+    padding: 1rem;
+  }
+  
+  .tui-footer-links {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  
+  .tui-group-title {
+    font-size: 0.85rem;
+  }
+  
+  .tui-footer-link {
+    font-size: 0.8rem;
+  }
+  
+  .tui-footer-line {
+    font-size: 0.75rem;
   }
 }
 </style>
