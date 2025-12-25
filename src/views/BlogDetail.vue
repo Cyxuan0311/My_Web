@@ -14,59 +14,86 @@
       <button class="back-btn" @click="goBack">返回博客列表</button>
     </div>
     
-    <div v-else class="blog-detail-content">
-      <!-- 返回按钮 -->
-      <button class="back-to-list-btn" @click="goBack">
-        <ArrowLeftIcon class="back-icon" />
-        返回博客列表
+    <div v-else class="tui-blog-detail-content">
+      <!-- 返回按钮 - TUI风格 -->
+      <button class="tui-back-to-list-btn" @click="goBack">
+        <span class="tui-prompt">←</span>
+        <ArrowLeftIcon class="tui-back-icon" />
+        <span>返回博客列表</span>
       </button>
       
-      <!-- 文章头部 -->
-      <header class="blog-header">
-        <h1 class="blog-title">{{ post?.title }}</h1>
-        <div class="blog-meta">
-          <span class="meta-item">
-            <CalendarIcon class="meta-icon" />
-            {{ post?.date }}
-          </span>
-          <span class="meta-item">
-            <TagIcon class="meta-icon" />
-            {{ post?.category }}
-          </span>
-          <span class="meta-item">
-            <EyeIcon class="meta-icon" />
-            {{ post?.views }} 阅读
-          </span>
-          <span class="meta-item">
-            <ChatBubbleLeftIcon class="meta-icon" />
-            {{ post?.comments }} 评论
-          </span>
-          <span class="meta-item">
-            <HeartIcon class="meta-icon" />
-            {{ post?.likes }} 点赞
-          </span>
+      <!-- 文章头部 - TUI风格 -->
+      <header class="tui-blog-header">
+        <div class="tui-section-header">
+          <span class="tui-header-decoration">┌─</span>
+          <span class="tui-section-title">BLOG DETAIL</span>
+          <span class="tui-header-decoration">─┐</span>
+        </div>
+        <div class="tui-blog-title-line">
+          <span class="tui-prompt">$</span>
+          <h1 class="tui-blog-title">{{ post?.title }}</h1>
+        </div>
+        <div class="tui-blog-meta">
+          <div class="tui-meta-line">
+            <span class="tui-prompt">→</span>
+            <CalendarIcon class="tui-meta-icon" />
+            <span class="tui-meta-label">DATE:</span>
+            <span class="tui-meta-value">{{ post?.date }}</span>
+          </div>
+          <div class="tui-meta-line">
+            <span class="tui-prompt">→</span>
+            <TagIcon class="tui-meta-icon" />
+            <span class="tui-meta-label">CATEGORY:</span>
+            <span class="tui-meta-value">{{ post?.category }}</span>
+          </div>
+          <div class="tui-meta-line">
+            <span class="tui-prompt">→</span>
+            <EyeIcon class="tui-meta-icon" />
+            <span class="tui-meta-label">VIEWS:</span>
+            <span class="tui-meta-value">{{ post?.views }}</span>
+          </div>
+          <div class="tui-meta-line">
+            <span class="tui-prompt">→</span>
+            <ChatBubbleLeftIcon class="tui-meta-icon" />
+            <span class="tui-meta-label">COMMENTS:</span>
+            <span class="tui-meta-value">{{ post?.comments }}</span>
+          </div>
+          <div class="tui-meta-line">
+            <span class="tui-prompt">→</span>
+            <HeartIcon class="tui-meta-icon" />
+            <span class="tui-meta-label">LIKES:</span>
+            <span class="tui-meta-value">{{ post?.likes }}</span>
+          </div>
         </div>
       </header>
       
-      <!-- 文章内容 -->
-      <article class="blog-article">
-        <div class="markdown-body" v-html="htmlContent"></div>
+      <!-- 文章内容 - TUI风格 -->
+      <article class="tui-blog-article">
+        <div class="tui-article-header">
+          <span class="tui-header-decoration">┌─</span>
+          <span class="tui-section-title">CONTENT</span>
+          <span class="tui-header-decoration">─┐</span>
+        </div>
+        <div class="tui-markdown-body" v-html="htmlContent"></div>
       </article>
       
-      <!-- 文章底部操作 -->
-      <footer class="blog-footer">
-        <div class="blog-actions">
-          <button class="action-btn like-btn">
-            <HeartIcon class="action-icon" />
-            点赞 ({{ post?.likes }})
+      <!-- 文章底部操作 - TUI风格 -->
+      <footer class="tui-blog-footer">
+        <div class="tui-blog-actions">
+          <button class="tui-action-btn tui-like-btn">
+            <span class="tui-prompt">→</span>
+            <HeartIcon class="tui-action-icon" />
+            <span>点赞 ({{ post?.likes }})</span>
           </button>
-          <button class="action-btn comment-btn">
-            <ChatBubbleLeftIcon class="action-icon" />
-            评论 ({{ post?.comments }})
+          <button class="tui-action-btn tui-comment-btn">
+            <span class="tui-prompt">→</span>
+            <ChatBubbleLeftIcon class="tui-action-icon" />
+            <span>评论 ({{ post?.comments }})</span>
           </button>
-          <button class="action-btn share-btn">
-            <ArrowLeftIcon class="action-icon" style="transform: rotate(180deg);" />
-            分享
+          <button class="tui-action-btn tui-share-btn">
+            <span class="tui-prompt">→</span>
+            <ArrowLeftIcon class="tui-action-icon" style="transform: rotate(180deg);" />
+            <span>分享</span>
           </button>
         </div>
       </footer>
@@ -214,6 +241,58 @@ export default {
   max-width: 900px;
   margin: 0 auto;
   min-height: calc(100vh - 200px);
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
+  color: #c9d1d9;
+}
+
+/* TUI 通用样式 */
+.tui-header-decoration {
+  color: #58a6ff;
+  font-size: 0.9rem;
+  font-weight: 400;
+  opacity: 0.6;
+  margin: 0 0.5rem;
+}
+
+.tui-section-title {
+  color: #58a6ff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 
+    0 0 10px rgba(88, 166, 255, 0.5),
+    0 0 20px rgba(88, 166, 255, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, #58a6ff 0%, #79c0ff 50%, #58a6ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% 100%;
+  animation: title-shimmer 3s ease-in-out infinite;
+}
+
+@keyframes title-shimmer {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.tui-section-header {
+  text-align: center;
+  padding: 1rem 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #30363d;
+}
+
+.tui-prompt {
+  color: #58a6ff;
+  font-weight: 600;
+  margin-right: 0.5rem;
+  font-size: 0.85rem;
 }
 
 .loading-container,
@@ -268,275 +347,328 @@ export default {
 
 .loading-text,
 .error-text {
-  color: #6b7280;
+  color: #8b949e;
   font-size: 1rem;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
 }
 
 .error-text {
-  color: #ef4444;
+  color: #f85149;
 }
 
 .back-btn,
-.back-to-list-btn {
+.tui-back-to-list-btn {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #3182ce, #20c997);
-  color: white;
-  border: none;
-  border-radius: 25px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  color: #58a6ff;
+  border-radius: 8px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(49, 130, 206, 0.2);
 }
 
 .back-btn:hover,
-.back-to-list-btn:hover {
+.tui-back-to-list-btn:hover {
+  border-color: #58a6ff;
+  background: #21262d;
+  box-shadow: 0 0 15px rgba(88, 166, 255, 0.2);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
 }
 
-.back-icon {
+.tui-back-icon {
   width: 18px;
   height: 18px;
+  color: inherit;
 }
 
-.back-to-list-btn {
+.tui-back-to-list-btn {
   margin-bottom: 2rem;
 }
 
-.blog-header {
-  margin-bottom: 2.5rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 2px solid #e5e7eb;
+.tui-blog-header {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 12px;
 }
 
-.blog-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 1.5rem;
-  line-height: 1.3;
-}
-
-.blog-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  font-size: 0.9rem;
-  color: #6b7280;
-}
-
-.meta-item {
+.tui-blog-title-line {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin-bottom: 1.5rem;
 }
 
-.meta-icon {
+.tui-blog-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #58a6ff;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.tui-blog-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+}
+
+.tui-meta-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.tui-meta-icon {
   width: 16px;
   height: 16px;
-  color: #9ca3af;
+  color: #58a6ff;
+  flex-shrink: 0;
 }
 
-.blog-article {
-  background: white;
+.tui-meta-label {
+  color: #8b949e;
+  font-weight: 600;
+}
+
+.tui-meta-value {
+  color: #c9d1d9;
+  font-variant-numeric: tabular-nums;
+}
+
+.tui-blog-article {
+  background: #0d1117;
+  border: 1px solid #30363d;
   border-radius: 12px;
-  padding: 2.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
   margin-bottom: 2rem;
 }
 
-/* Markdown样式 */
-.markdown-body {
-  color: #374151;
-  line-height: 1.8;
-  font-size: 1rem;
+.tui-article-header {
+  text-align: center;
+  padding: 0.75rem 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #30363d;
 }
 
-.markdown-body :deep(h1) {
-  font-size: 2rem;
+/* Markdown样式 - TUI风格 */
+.tui-markdown-body {
+  color: #c9d1d9;
+  line-height: 1.8;
+  font-size: 0.95rem;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
+}
+
+.tui-markdown-body :deep(h1) {
+  font-size: 1.5rem;
   font-weight: 700;
-  color: #1a202c;
+  color: #58a6ff;
   margin-top: 2rem;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 1px solid #30363d;
 }
 
-.markdown-body :deep(h2) {
-  font-size: 1.75rem;
+.tui-markdown-body :deep(h2) {
+  font-size: 1.3rem;
   font-weight: 600;
-  color: #1a202c;
+  color: #58a6ff;
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
 }
 
-.markdown-body :deep(h3) {
-  font-size: 1.5rem;
+.tui-markdown-body :deep(h3) {
+  font-size: 1.1rem;
   font-weight: 600;
-  color: #2d3748;
+  color: #79c0ff;
   margin-top: 1.25rem;
   margin-bottom: 0.5rem;
 }
 
-.markdown-body :deep(h4) {
-  font-size: 1.25rem;
+.tui-markdown-body :deep(h4) {
+  font-size: 1rem;
   font-weight: 600;
-  color: #4a5568;
+  color: #79c0ff;
   margin-top: 1rem;
   margin-bottom: 0.5rem;
 }
 
-.markdown-body :deep(p) {
+.tui-markdown-body :deep(p) {
   margin-bottom: 1rem;
   line-height: 1.8;
+  color: #c9d1d9;
 }
 
-.markdown-body :deep(ul),
-.markdown-body :deep(ol) {
+.tui-markdown-body :deep(ul),
+.tui-markdown-body :deep(ol) {
   margin-bottom: 1rem;
   padding-left: 2rem;
+  color: #c9d1d9;
 }
 
-.markdown-body :deep(li) {
+.tui-markdown-body :deep(li) {
   margin-bottom: 0.5rem;
   line-height: 1.8;
 }
 
-.markdown-body :deep(blockquote) {
-  border-left: 4px solid #3182ce;
+.tui-markdown-body :deep(blockquote) {
+  border-left: 3px solid #58a6ff;
   padding-left: 1rem;
   margin: 1rem 0;
-  color: #6b7280;
+  color: #8b949e;
   font-style: italic;
-  background: #f9fafb;
+  background: #161b22;
   padding: 1rem 1.5rem;
   border-radius: 4px;
+  border: 1px solid #30363d;
 }
 
-.markdown-body :deep(code) {
-  background: #f3f4f6;
+.tui-markdown-body :deep(code) {
+  background: #161b22;
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
-  font-family: 'Courier New', monospace;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
   font-size: 0.9em;
-  color: #e11d48;
+  color: #58a6ff;
+  border: 1px solid #30363d;
 }
 
-.markdown-body :deep(pre) {
-  background: #1a202c;
-  color: #e2e8f0;
+.tui-markdown-body :deep(pre) {
+  background: #161b22;
+  color: #c9d1d9;
   padding: 1.5rem;
   border-radius: 8px;
   overflow-x: auto;
   margin: 1.5rem 0;
   line-height: 1.6;
+  border: 1px solid #30363d;
 }
 
-.markdown-body :deep(pre code) {
+.tui-markdown-body :deep(pre code) {
   background: transparent;
   padding: 0;
   color: inherit;
   font-size: 0.9rem;
+  border: none;
 }
 
-.markdown-body :deep(a) {
-  color: #3182ce;
+.tui-markdown-body :deep(a) {
+  color: #58a6ff;
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: all 0.3s ease;
 }
 
-.markdown-body :deep(a:hover) {
-  border-bottom-color: #3182ce;
+.tui-markdown-body :deep(a:hover) {
+  border-bottom-color: #58a6ff;
+  text-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
 }
 
-.markdown-body :deep(img) {
+.tui-markdown-body :deep(img) {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
   margin: 1.5rem 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #30363d;
 }
 
-.markdown-body :deep(table) {
+.tui-markdown-body :deep(table) {
   width: 100%;
   border-collapse: collapse;
   margin: 1.5rem 0;
+  border: 1px solid #30363d;
 }
 
-.markdown-body :deep(th),
-.markdown-body :deep(td) {
-  border: 1px solid #e5e7eb;
+.tui-markdown-body :deep(th),
+.tui-markdown-body :deep(td) {
+  border: 1px solid #30363d;
   padding: 0.75rem;
   text-align: left;
+  color: #c9d1d9;
 }
 
-.markdown-body :deep(th) {
-  background: #f9fafb;
+.tui-markdown-body :deep(th) {
+  background: #161b22;
   font-weight: 600;
+  color: #58a6ff;
 }
 
-.markdown-body :deep(hr) {
+.tui-markdown-body :deep(hr) {
   border: none;
-  border-top: 2px solid #e5e7eb;
+  border-top: 1px solid #30363d;
   margin: 2rem 0;
 }
 
-.blog-footer {
+.tui-blog-footer {
   padding-top: 2rem;
-  border-top: 2px solid #e5e7eb;
+  border-top: 1px solid #30363d;
 }
 
-.blog-actions {
+.tui-blog-actions {
   display: flex;
   gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
 }
 
-.action-btn {
+.tui-action-btn {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: white;
-  border: 2px solid #e5e7eb;
-  border-radius: 25px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Fira Code', monospace;
   font-size: 0.9rem;
   font-weight: 500;
+  color: #8b949e;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: #4b5563;
 }
 
-.action-btn:hover {
+.tui-action-btn:hover {
+  border-color: #58a6ff;
+  background: #21262d;
+  color: #58a6ff;
+  box-shadow: 0 0 15px rgba(88, 166, 255, 0.2);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.like-btn:hover {
-  border-color: #ef4444;
-  color: #ef4444;
+.tui-like-btn:hover {
+  border-color: #f85149;
+  color: #f85149;
+  box-shadow: 0 0 15px rgba(248, 81, 73, 0.2);
 }
 
-.comment-btn:hover {
-  border-color: #3182ce;
-  color: #3182ce;
+.tui-comment-btn:hover {
+  border-color: #58a6ff;
+  color: #58a6ff;
+  box-shadow: 0 0 15px rgba(88, 166, 255, 0.2);
 }
 
-.share-btn:hover {
-  border-color: #20c997;
-  color: #20c997;
+.tui-share-btn:hover {
+  border-color: #58a6ff;
+  color: #58a6ff;
+  box-shadow: 0 0 15px rgba(88, 166, 255, 0.2);
 }
 
-.action-icon {
+.tui-action-icon {
   width: 18px;
   height: 18px;
+  color: inherit;
 }
 
 @media (max-width: 768px) {
@@ -544,39 +676,40 @@ export default {
     padding: 1rem;
   }
   
-  .blog-title {
-    font-size: 1.75rem;
+  .tui-blog-title {
+    font-size: 1.25rem;
   }
   
-  .blog-article {
-    padding: 1.5rem;
+  .tui-blog-article {
+    padding: 1.25rem;
   }
   
-  .blog-meta {
-    gap: 1rem;
+  .tui-blog-meta {
+    gap: 0.5rem;
     font-size: 0.85rem;
   }
   
-  .blog-actions {
+  .tui-blog-actions {
     flex-direction: column;
   }
   
-  .action-btn {
+  .tui-action-btn {
     width: 100%;
     justify-content: center;
   }
   
-  .markdown-body :deep(h1) {
-    font-size: 1.75rem;
+  .tui-markdown-body :deep(h1) {
+    font-size: 1.3rem;
   }
   
-  .markdown-body :deep(h2) {
-    font-size: 1.5rem;
+  .tui-markdown-body :deep(h2) {
+    font-size: 1.2rem;
   }
   
-  .markdown-body :deep(h3) {
-    font-size: 1.25rem;
+  .tui-markdown-body :deep(h3) {
+    font-size: 1.1rem;
   }
 }
 </style>
+
 
