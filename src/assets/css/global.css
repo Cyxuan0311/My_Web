@@ -1,3 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Times New Roman', Times, Georgia, serif;
+  --font-code: 'Menlo', 'Consolas', 'SF Mono', 'Fira Code', monospace;
+
+  --bg: #ffffff;
+  --bg-soft: #fafafa;
+  --bg-mute: #f0f0f0;
+  --bg-elevated: #ffffff;
+  --text: #333333;
+  --text-strong: #000000;
+  --text-weak: #666666;
+  --text-mute: #999999;
+  --text-inactive: #bbbbbb;
+  --border: #e5e5e5;
+  --border-strong: #d0d0d0;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.06);
+  --code-bg: #f7f7f7;
+  --code-text: #d63384;
+  --code-block-bg: #1e1e2e;
+  --code-block-text: #cdd6f4;
+  --table-stripe: #fafafa;
+  --table-th-bg: #f5f5f5;
+}
+
+[data-theme="dark"] {
+  --bg: #1a1a1a;
+  --bg-soft: #222222;
+  --bg-mute: #2a2a2a;
+  --bg-elevated: #262626;
+  --text: #d4d4d4;
+  --text-strong: #ededed;
+  --text-weak: #a0a0a0;
+  --text-mute: #707070;
+  --text-inactive: #555555;
+  --border: #333333;
+  --border-strong: #444444;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.3);
+  --code-bg: #2a2a2a;
+  --code-text: #f5a0c0;
+  --code-block-bg: #11111b;
+  --code-block-text: #cdd6f4;
+  --table-stripe: #222222;
+  --table-th-bg: #2a2a2a;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -9,23 +59,23 @@ html {
 }
 
 body {
-  font-family: 'Times New Roman', Times, Georgia, serif;
+  font-family: var(--font-body);
   line-height: 1.8;
-  color: #333;
-  background: #fff;
+  color: var(--text);
+  background: var(--bg);
   font-size: 18px;
   -webkit-font-smoothing: antialiased;
 }
 
 a {
-  color: #1a1a1a;
+  color: var(--text-strong);
   text-decoration: underline;
   text-underline-offset: 2px;
   transition: color 0.2s;
 }
 
 a:hover {
-  color: #666;
+  color: var(--text-weak);
 }
 
 img {
@@ -34,9 +84,10 @@ img {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Times New Roman', Times, Georgia, serif;
+  font-family: var(--font-body);
   font-weight: 700;
   line-height: 1.3;
+  color: var(--text-strong);
 }
 
 h1 { font-size: 2rem; }
@@ -62,7 +113,7 @@ p {
   font-weight: 700;
   margin-bottom: 1.5rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--border);
 }
 
 @media (max-width: 768px) {

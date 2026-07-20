@@ -45,7 +45,7 @@ export default {
 }
 
 .page-desc {
-  color: #666;
+  color: var(--text-weak);
   font-size: 1.05rem;
   margin-bottom: 0;
 }
@@ -72,21 +72,24 @@ export default {
 }
 
 .contact-label {
-  color: #999;
+  color: var(--text-mute);
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
 }
 
 .sep {
-  color: #ddd;
+  color: var(--border-strong);
 }
 
 .contact-row a {
-  color: #333;
+  color: var(--text);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 .contact-row a:hover {
-  color: #666;
+  color: var(--text-weak);
 }
 
 @media (max-width: 768px) {

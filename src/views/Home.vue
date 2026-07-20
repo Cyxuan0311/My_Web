@@ -1,65 +1,54 @@
 <template>
   <div class="home">
-    <template v-if="!detailView">
-      <div class="sub-tabs">
-        <button
-          class="sub-tab"
-          :class="{ active: subTab === 'projects' }"
-          @click="subTab = 'projects'"
-        >{{ homeText.subTabs.projects }}</button>
-        <button
-          class="sub-tab"
-          :class="{ active: subTab === 'notes' }"
-          @click="subTab = 'notes'"
-        >{{ homeText.subTabs.notes }}</button>
-      </div>
+    <Transition name="fade" mode="out-in">
+      <div v-if="!detailView" key="list" class="home-list">
+        <div class="sub-tabs">
+          <button
+            class="sub-tab"
+            :class="{ active: subTab === 'projects' }"
+            @click="subTab = 'projects'"
+          >{{ homeText.subTabs.projects }}</button>
+          <button
+            class="sub-tab"
+            :class="{ active: subTab === 'notes' }"
+            @click="subTab = 'notes'"
+          >{{ homeText.subTabs.notes }}</button>
+        </div>
 
-      <div class="list-wrap">
-        <div class="scroll-area">
-          <template v-if="subTab === 'projects'">
-            <div class="list">
-              <div
-                class="list-card"
-                v-for="project in projects"
-                :key="project.id"
-                @click="openProject(project)"
-              >
-                <h3 class="list-card-title">{{ project.name }}</h3>
-                <p class="list-card-desc">{{ project.description }}</p>
-                <div class="list-card-meta">
-                  <span class="lang-tag">{{ project.language }}</span>
-                  <span v-if="project.stars">★ {{ project.stars }}</span>
-                  <span class="read-more">{{ homeText.readMore }} →</span>
-                </div>
+        <div class="list-wrap">
+          <div class="scroll-area">
+            <template v-if="subTab === 'projects'">
+              <div class="list">
+                <ProjectCard
+                  v-for="project in projects"
+                  :key="project.id"
+                  :project="project"
+                  :read-more-text="homeText.readMore"
+                  @open="openProject"
+                />
               </div>
-            </div>
-          </template>
-          <template v-else>
-            <div class="list">
-              <div
-                class="list-card"
-                v-for="note in notes"
-                :key="note.id"
-                @click="openNote(note)"
-              >
-                <h3 class="list-card-title">{{ note.title }}</h3>
-                <p class="list-card-desc">{{ note.description }}</p>
-                <div class="list-card-meta">
-                  <span></span>
-                  <span class="read-more">{{ homeText.readMore }} →</span>
-                </div>
+            </template>
+            <template v-else>
+              <div class="list">
+                <NoteCard
+                  v-for="note in notes"
+                  :key="note.id"
+                  :note="note"
+                  :read-more-text="homeText.readMore"
+                  @open="openNote"
+                />
               </div>
-            </div>
-          </template>
+            </template>
+          </div>
         </div>
       </div>
-    </template>
 
-    <div v-else class="detail-wrap">
-      <button class="back-btn" @click="closeDetail">← {{ homeText.back }}</button>
-      <div class="md-body" v-html="mdHtml"></div>
-      <div v-if="mdLoading" class="md-loading">{{ homeText.loading }}</div>
-    </div>
+      <div v-else class="detail-wrap" key="detail">
+        <button class="back-btn" @click="closeDetail">← {{ homeText.back }}</button>
+        <div class="md-body" v-html="mdHtml"></div>
+        <div v-if="mdLoading" class="md-loading">{{ homeText.loading }}</div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -94,6 +83,8 @@ hljs.registerLanguage('text', plaintext)
 hljs.registerLanguage('plaintext', plaintext)
 
 import { useI18n } from '../composables/useI18n'
+import ProjectCard from '../components/ProjectCard.vue'
+import NoteCard from '../components/NoteCard.vue'
 
 marked.setOptions({
   highlight(code, lang) {
@@ -110,6 +101,7 @@ marked.setOptions({
 
 export default {
   name: 'Home',
+  components: { ProjectCard, NoteCard },
   setup() {
     const { messages } = useI18n()
     const homeText = computed(() => messages.value.home)
@@ -159,10 +151,14 @@ export default {
   margin: 0 auto;
 }
 
+.home-list {
+  width: 100%;
+}
+
 .sub-tabs {
   display: flex;
   gap: 0;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--border);
   margin-bottom: 1.5rem;
   padding-top: 0.5rem;
 }
@@ -171,21 +167,22 @@ export default {
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  font-family: 'Times New Roman', Times, Georgia, serif;
-  font-size: 1.05rem;
-  color: #999;
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-mute);
   cursor: pointer;
   padding: 0.5rem 1rem;
   margin-bottom: -1px;
   transition: color 0.15s, border-color 0.15s;
 }
 
-.sub-tab:hover { color: #666; }
+.sub-tab:hover { color: var(--text-weak); }
 
 .sub-tab.active {
-  color: #000;
-  font-weight: 700;
-  border-bottom-color: #000;
+  color: var(--text-strong);
+  font-weight: 600;
+  border-bottom-color: var(--text-strong);
 }
 
 .list-wrap {
@@ -195,79 +192,21 @@ export default {
 .scroll-area {
   max-height: 72vh;
   overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  scrollbar-gutter: stable;
 }
-
-.scroll-area::-webkit-scrollbar { display: none; }
 
 .list {
   display: flex;
   flex-direction: column;
   gap: 1px;
-  background: #e5e5e5;
-  border: 1px solid #e5e5e5;
-  border-radius: 4px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 6px;
   overflow: hidden;
 }
 
-.list-card {
-  padding: 1.15rem 1.5rem;
-  background: #fff;
-  cursor: pointer;
-  transition: background 0.15s;
-  min-height: 110px;
-  display: flex;
-  flex-direction: column;
-}
-
-.list-card:hover { background: #fafafa; }
-
-.list-card + .list-card {
-  border-top: 1px solid #e5e5e5;
-}
-
-.list-card-title {
-  font-size: 1.15rem;
-  margin-bottom: 0.2rem;
-  font-weight: 700;
-}
-
-.list-card-desc {
-  color: #666;
-  font-size: 0.9rem;
-  flex: 1;
-  margin-bottom: 0;
-}
-
-.list-card-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 0.82rem;
-  color: #999;
-  margin-top: 0.6rem;
-}
-
-.lang-tag {
-  display: inline-block;
-  background: #f0f0f0;
-  padding: 0.05rem 0.5rem;
-  border-radius: 3px;
-  font-size: 0.8rem;
-  color: #666;
-}
-
-.read-more {
-  margin-left: auto;
-  color: #1a1a1a;
-  font-weight: 500;
-  font-size: 0.9rem;
-}
-
-.list-card:hover .read-more { text-decoration: underline; }
-
-/* ----- detail view ----- */
 .detail-wrap {
   max-width: 760px;
   margin: 0 auto;
@@ -278,47 +217,45 @@ export default {
   display: inline-block;
   background: none;
   border: none;
-  font-family: 'Times New Roman', Times, Georgia, serif;
+  font-family: var(--font-ui);
   font-size: 1rem;
-  color: #666;
+  font-weight: 500;
+  color: var(--text-weak);
   cursor: pointer;
   padding: 0;
   margin-bottom: 1.5rem;
   transition: color 0.2s;
 }
 
-.back-btn:hover { color: #000; }
+.back-btn:hover { color: var(--text-strong); }
 
-.md-loading { color: #999; font-size: 0.9rem; }
+.md-loading { color: var(--text-mute); font-size: 0.9rem; }
 
-/* ----- rendered markdown body ----- */
 .md-body {
   line-height: 1.85;
   font-size: 1rem;
 }
 
-.md-body h1 { font-size: 1.7rem; margin-bottom: 0.5rem; }
-.md-body h2 { font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0.5rem; }
-.md-body h3 { font-size: 1.15rem; margin-top: 1.5rem; margin-bottom: 0.25rem; }
-.md-body p { margin-bottom: 0.75rem; color: #333; }
+.md-body h1 { font-size: 1.7rem; margin-bottom: 0.5rem; color: var(--text-strong); }
+.md-body h2 { font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0.5rem; color: var(--text-strong); }
+.md-body h3 { font-size: 1.15rem; margin-top: 1.5rem; margin-bottom: 0.25rem; color: var(--text-strong); }
+.md-body p { margin-bottom: 0.75rem; color: var(--text); }
 .md-body ul, .md-body ol { margin-bottom: 0.75rem; padding-left: 1.5rem; }
 .md-body li { margin-bottom: 0.25rem; }
 .md-body strong { font-weight: 700; }
 
-/* inline code */
 .md-body code:not(pre code) {
-  font-family: 'Menlo', 'Consolas', 'SF Mono', monospace;
+  font-family: var(--font-code);
   font-size: 0.85em;
-  background: #f0f0f0;
+  background: var(--code-bg);
   padding: 0.15em 0.4em;
   border-radius: 3px;
-  color: #d63384;
+  color: var(--code-text);
 }
 
-/* code blocks */
 .md-body pre {
   position: relative;
-  background: #1e1e2e;
+  background: var(--code-block-bg);
   padding: 1rem 1.25rem;
   border-radius: 6px;
   overflow-x: auto;
@@ -330,12 +267,11 @@ export default {
 .md-body pre code {
   background: none;
   padding: 0;
-  color: #cdd6f4;
-  font-family: 'Menlo', 'Consolas', 'SF Mono', monospace;
+  color: var(--code-block-text);
+  font-family: var(--font-code);
   tab-size: 2;
 }
 
-/* tables */
 .md-body table {
   width: 100%;
   border-collapse: collapse;
@@ -345,42 +281,57 @@ export default {
 
 .md-body th,
 .md-body td {
-  border: 1px solid #d0d0d0;
+  border: 1px solid var(--border-strong);
   padding: 0.5rem 0.75rem;
   text-align: left;
   vertical-align: top;
 }
 
 .md-body th {
-  background: #f5f5f5;
+  background: var(--table-th-bg);
   font-weight: 700;
+  color: var(--text-strong);
 }
 
 .md-body tr:nth-child(even) td {
-  background: #fafafa;
+  background: var(--table-stripe);
 }
 
-/* blockquote */
 .md-body blockquote {
-  border-left: 3px solid #d0d0d0;
+  border-left: 3px solid var(--border-strong);
   padding-left: 1rem;
-  color: #666;
+  color: var(--text-weak);
   margin-bottom: 0.75rem;
 }
 
-/* links */
-.md-body a { color: #1a1a1a; text-decoration: underline; }
-.md-body a:hover { color: #666; }
+.md-body a { color: var(--text-strong); text-decoration: underline; }
+.md-body a:hover { color: var(--text-weak); }
 
-/* horizontal rule */
 .md-body hr {
   border: none;
-  border-top: 1px solid #e5e5e5;
+  border-top: 1px solid var(--border);
   margin: 1.5rem 0;
 }
 
+.fade-enter-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.fade-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.fade-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
 @media (max-width: 768px) {
-  .list-card { padding: 0.9rem 1.1rem; }
   .scroll-area { max-height: 65vh; }
 }
 </style>
