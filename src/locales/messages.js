@@ -8,6 +8,7 @@ export const messages = {
       languageButton: '切换中文'
     },
     home: {
+      githubOwner: 'Cyxuan0311',
       subTabs: { projects: 'Projects', notes: 'Notes' },
       readMore: 'Read',
       back: 'Back',
@@ -120,6 +121,7 @@ export const messages = {
       languageButton: 'Switch to EN'
     },
     home: {
+      githubOwner: 'Cyxuan0311',
       subTabs: { projects: 'Projects', notes: 'Notes' },
       readMore: 'Read',
       back: 'Back',

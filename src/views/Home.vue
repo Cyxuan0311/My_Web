@@ -20,9 +20,12 @@
             <template v-if="subTab === 'projects'">
               <div class="list">
                 <ProjectCard
-                  v-for="project in projects"
+                  v-for="project in projectsWithStars"
                   :key="project.id"
                   :project="project"
+                  :live-stars="project.liveStars"
+                  :github-owner="githubOwner"
+                  :stars-loading="starsLoading"
                   :read-more-text="homeText.readMore"
                   @open="openProject"
                 />
@@ -53,7 +56,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { marked } from 'marked'
 import hljs from 'highlight.js/lib/core'
 import cpp from 'highlight.js/lib/languages/cpp'
@@ -83,6 +86,7 @@ hljs.registerLanguage('text', plaintext)
 hljs.registerLanguage('plaintext', plaintext)
 
 import { useI18n } from '../composables/useI18n'
+import { useGitHubStars } from '../composables/useGitHubStars'
 import ProjectCard from '../components/ProjectCard.vue'
 import NoteCard from '../components/NoteCard.vue'
 
@@ -107,6 +111,16 @@ export default {
     const homeText = computed(() => messages.value.home)
     const projects = computed(() => messages.value.home.projects)
     const notes = computed(() => messages.value.home.notes)
+
+    const githubOwner = computed(() => messages.value.home.githubOwner)
+    const { fetchStars, getStar, loading: starsLoading } = useGitHubStars()
+    const projectsWithStars = computed(() =>
+      projects.value.map(p => ({ ...p, liveStars: getStar(p.name) }))
+    )
+
+    onMounted(() => {
+      if (githubOwner.value) fetchStars(githubOwner.value)
+    })
 
     const subTab = ref('projects')
     const detailView = ref(false)
@@ -138,6 +152,7 @@ export default {
 
     return {
       homeText, projects, notes,
+      projectsWithStars, githubOwner, starsLoading,
       subTab, detailView, mdHtml, mdLoading,
       openProject, openNote, closeDetail
     }
